@@ -18,6 +18,7 @@ export const queries = {
   invitations: (params = "") => listQuery<Record<string, unknown>>(`/invitations/candidate-invitations${params}`, "invitations"),
   recruiterProfile: () => api.get<Record<string, unknown>>("/recruiters/me/profile"),
   assessmentSubmissions: (id: string, params = "") => listQuery<Record<string, unknown>>(`/assessments/${id}/submissions${params}`, "submissions"),
+  assessmentCandidates: (id: string, params = "") => listQuery<Record<string, unknown>>(`/assessments/${id}/candidates${params}`, "candidates"),
   candidates: (params = "") => listQuery<User>(`/users/candidates${params}`, "candidates"),
   candidate: (id: string) => api.get<User>(`/users/candidates/${id}`),
 };
