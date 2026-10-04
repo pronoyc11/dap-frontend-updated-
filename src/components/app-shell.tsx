@@ -16,12 +16,11 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { api } from "@/lib/api";
-import { queries } from "@/lib/queries";
 import { initials } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth";
 import type { Role } from "@/lib/types";
 import { ThemeToggle } from "./theme-toggle";
+import { useCurrentUser, useLogout } from "@/features/auth/hooks/use-auth";
+import { dashboardForUser } from "@/features/auth/utils/auth.utils";
 
 const nav: Record<
   Role,
@@ -64,38 +63,18 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, setUser } = useAuthStore();
+  const { data: user, isPending, isError } = useCurrentUser();
+  const logoutMutation = useLogout();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (!user)
-      queries
-        .me()
-        .then((profile) => {
-          setUser(profile);
-          if (profile.role !== role)
-            router.replace(
-              profile.role === "ADMIN"
-                ? "/admin"
-                : profile.role === "RECRUITER"
-                ? "/recruiter"
-                : "/dashboard"
-            );
-        })
-        .catch(() => router.push("/login"));
-    else if (user.role !== role)
-      router.replace(
-        user.role === "ADMIN"
-          ? "/admin"
-          : user.role === "RECRUITER"
-          ? "/recruiter"
-          : "/dashboard"
-      );
-  }, [user, role, setUser, router]);
+    if (isError) router.replace("/login");
+    else if (user && user.role !== role) router.replace(dashboardForUser(user));
+  }, [isError, role, router, user]);
   async function logout() {
-    await api.post("/auth/logout").catch(() => undefined);
-    setUser(null);
-    router.push("/login");
+    await logoutMutation.mutateAsync().catch(() => undefined);
+    router.replace("/login");
   }
+  if (isPending || !user) return <div className="grid min-h-screen place-items-center bg-[#07111f] text-sm text-slate-400">Loading workspace…</div>;
   return (
     <div className="min-h-screen bg-[#07111f]">
       <aside

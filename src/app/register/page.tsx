@@ -1,9 +1,9 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
-import { api } from "@/lib/api";
-import { Button, Card } from "@/components/ui";
-const schema = z.object({ name: z.string().min(2), email: z.string().email(), password: z.string().min(8), role: z.enum(["CANDIDATE", "RECRUITER"]) });
-export default function Register() { const router = useRouter(); const [error, setError] = useState(""); const form = useForm({ defaultValues: { name: "", email: "", password: "", role: "CANDIDATE" as "CANDIDATE" | "RECRUITER" }, onSubmit: async ({ value }) => { const parsed = schema.safeParse(value); if (!parsed.success) { setError(parsed.error.issues[0]?.message ?? "Check your details"); return; } try { await api.post("/auth/register", value); router.push(`/verify-email?email=${encodeURIComponent(value.email)}`); } catch (e) { setError(e instanceof Error ? e.message : "Unable to register"); } } }); return <main className="grid min-h-screen place-items-center bg-[#07111f] p-6"><Card className="w-full max-w-lg"><h1 className="text-3xl font-black text-white">Create your workspace</h1><p className="mt-2 text-slate-400">Join Atlas as a candidate or recruiting team.</p><form className="mt-8 space-y-4" onSubmit={(e) => { e.preventDefault(); void form.handleSubmit(); }}>{([["name", "Full name", "text"], ["email", "Email", "email"], ["password", "Password", "password"]] as const).map(([name, label, type]) => <label className="block text-sm font-semibold" key={name}>{label}<input type={type} className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" value={form.getFieldValue(name)} onChange={(e) => form.setFieldValue(name, e.target.value)} /></label>)}<label className="block text-sm font-semibold">Account type<select className="mt-2 w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white" value={form.getFieldValue("role")} onChange={(e) => form.setFieldValue("role", e.target.value as "CANDIDATE" | "RECRUITER")}><option value="CANDIDATE">Candidate</option><option value="RECRUITER">Recruiter</option></select></label>{error && <p className="text-sm text-rose-300">{error}</p>}<Button className="w-full">Continue</Button></form></Card></main>; }
+import type { Metadata } from "next";
+import { AuthShell } from "@/features/auth/components/auth-shell";
+import { RegisterForm } from "@/features/auth/components/register-form";
+
+export const metadata: Metadata = { title: "Create account", robots: { index: false, follow: false } };
+
+export default function RegisterPage() {
+  return <AuthShell title="Create your workspace" description="Join Atlas as a candidate or recruiting team."><RegisterForm /></AuthShell>;
+}
