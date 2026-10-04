@@ -22,6 +22,7 @@ import { initials } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 import type { Role } from "@/lib/types";
 import { ThemeToggle } from "./theme-toggle";
+import { toast } from "sonner";
 
 const nav: Record<
   Role,
@@ -32,6 +33,7 @@ const nav: Record<
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/applications", label: "Applications", icon: ShieldCheck },
     { href: "/admin/audit-logs", label: "Audit logs", icon: FileText },
+    { href: "/admin/profile", label: "Profile", icon: UserRound },
   ],
   RECRUITER: [
     { href: "/recruiter", label: "Overview", icon: LayoutDashboard },
@@ -42,6 +44,7 @@ const nav: Record<
       icon: ClipboardList,
     },
     { href: "/recruiter/submissions", label: "Submissions", icon: BarChart3 },
+    { href: "/recruiter/candidates", label: "Candidates", icon: Users },
     { href: "/recruiter/profile", label: "Company profile", icon: Settings },
   ],
   CANDIDATE: [
@@ -93,6 +96,7 @@ export function AppShell({
   }, [user, role, setUser, router]);
   async function logout() {
     await api.post("/auth/logout").catch(() => undefined);
+    toast.success("Signed out successfully");
     setUser(null);
     router.push("/login");
   }
