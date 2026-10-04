@@ -1,6 +1,6 @@
 import type { ApiResponse } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+const API_URL = process.env.API_BASE_URL ?? "http://localhost:5000/api/v1";
 const BROWSER_API_URL = "/api/backend";
 
 export class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }
@@ -11,7 +11,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   try {
     response = await fetch(`${baseUrl}${path}`, { ...options, credentials: "include", headers: { ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }), ...options.headers }, cache: "no-store" });
   } catch {
-    throw new ApiError(0, "Cannot reach the API. Start Assingment6 on port 5000 or check NEXT_PUBLIC_API_URL.");
+    throw new ApiError(0, "Cannot reach the API. Check API_BASE_URL or the backend service.");
   }
   const payload = (await response.json().catch(() => ({}))) as Partial<ApiResponse<T>> & { message?: string };
   if (!response.ok) throw new ApiError(response.status, payload.message ?? "Request failed");

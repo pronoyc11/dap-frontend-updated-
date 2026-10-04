@@ -1,5 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import {
   ArrowUpRight,
   ClipboardList,
@@ -8,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import { queries } from "@/lib/queries";
-import { Badge, Card, EmptyState, Skeleton } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
 import type {
   Assessment,
   Dashboard as DashboardData,
@@ -100,6 +101,7 @@ export function AdminOverview() {
           ))}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Admin operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/admin/users"><Button variant="secondary">Manage users</Button></Link><Link href="/admin/applications"><Button variant="secondary">Review recruiter applications</Button></Link><Link href="/admin/audit-logs"><Button variant="secondary">View audit logs</Button></Link></div></Card>
     </>
   );
 }
@@ -175,6 +177,7 @@ export function RecruiterOverview() {
           )}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Authoring operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/recruiter/problems/new"><Button>New problem</Button></Link><Link href="/recruiter/problems"><Button variant="secondary">Manage problem bank</Button></Link><Link href="/recruiter/assessments/new"><Button>New assessment</Button></Link><Link href="/recruiter/assessments"><Button variant="secondary">Manage assessments</Button></Link><Link href="/recruiter/submissions"><Button variant="secondary">Review submissions</Button></Link><Link href="/recruiter/profile"><Button variant="secondary">Edit company profile</Button></Link></div></Card>
     </>
   );
 }
@@ -252,6 +255,7 @@ export function CandidateOverview() {
           )}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Candidate actions</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/dashboard/invitations"><Button>View invitations</Button></Link><Link href="/dashboard/profile"><Button variant="secondary">Update profile</Button></Link><Link href="/dashboard/payments"><Button variant="secondary">View results</Button></Link></div></Card>
     </>
   );
 }
