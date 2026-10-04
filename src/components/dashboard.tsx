@@ -12,9 +12,6 @@ import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
 import type {
   Assessment,
-  Dashboard as DashboardData,
-  Paginated,
-  Problem,
   Attempt,
 } from "@/lib/types";
 
@@ -52,7 +49,7 @@ export function AdminOverview() {
     return (
       <EmptyState
         title="Dashboard unavailable"
-        description="Start the backend and check your admin session."
+        description={error instanceof Error ? error.message : "Start the backend and check your admin session."}
       />
     );
   return (
@@ -65,38 +62,38 @@ export function AdminOverview() {
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total users"
-          value={Object.values(data.users ?? {}).reduce((a, b) => a + b, 0)}
+          value={data.users.total}
           detail="Across every role"
           icon={Users}
         />
         <StatCard
           label="Published assessments"
-          value={data.publishedAssessments}
-          detail={`${data.assessments} total assessments`}
+          value={data.assessments.published}
+          detail={`${data.assessments.total} total assessments`}
           icon={ClipboardList}
         />
         <StatCard
           label="Attempts"
-          value={data.attempts}
+          value={data.attempts.total}
           detail="Candidate activity"
           icon={Zap}
         />
         <StatCard
           label="Paid checkouts"
-          value={data.paidPayments}
-          detail={`${data.payments} total payments`}
+          value={data.payments.paid}
+          detail={`${data.payments.total} total payments`}
           icon={CreditCard}
         />
       </div>
       <Card className="mt-6">
         <h2 className="font-bold text-white">Role distribution</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {Object.entries(data.users ?? {}).map(([role, count]) => (
+          {(["candidates", "recruiters", "admins"] as const).map((role) => (
             <div key={role} className="rounded-xl bg-white/[.04] p-4">
               <p className="text-xs uppercase tracking-wider text-slate-500">
                 {role}
               </p>
-              <p className="mt-2 text-2xl font-black text-white">{count}</p>
+              <p className="mt-2 text-2xl font-black text-white">{data.users[role]}</p>
             </div>
           ))}
         </div>

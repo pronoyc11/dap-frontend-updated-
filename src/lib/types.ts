@@ -21,4 +21,9 @@ export interface Problem { id: string; title: string; question: string; type: "M
 export interface Assessment { id: string; title: string; description: string; durationMinutes: number; passingScore: number; status: "DRAFT" | "READY" | "PUBLISHED" | "CLOSED"; itemCount?: number; createdAt?: string; items?: AssessmentItem[]; }
 export interface AssessmentItem { id: string; order: number; title: string; question: string; type: "MCQ" | "WRITTEN"; options: string[]; points: number; }
 export interface Attempt { id: string; assessmentId: string; assessment?: Assessment; status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED" | "EVALUATED"; score?: number | null; maxScore?: number; passed?: boolean | null; deadline?: string; }
-export interface Dashboard { users: Record<string, number>; assessments: number; publishedAssessments: number; attempts: number; payments: number; paidPayments: number; }
+export interface Dashboard {
+  users: { total: number; candidates: number; recruiters: number; admins: number; active: number; blocked: number };
+  assessments: { total: number; published: number };
+  attempts: { total: number };
+  payments: { total: number; paid: number };
+}
