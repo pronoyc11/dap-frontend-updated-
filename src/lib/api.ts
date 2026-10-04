@@ -23,6 +23,7 @@ export const api = {
   post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) }),
   patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body: body === undefined ? undefined : JSON.stringify(body) }),
   del: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  form: <T>(path: string, body: FormData, method: "PATCH" | "POST" = "POST") => requestForm<T>(path, body, method),
 };
 
 // Complete backend contract map. UI modules call these through the same

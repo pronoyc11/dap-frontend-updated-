@@ -15,6 +15,7 @@ export const queries = {
   attempt: (id: string) => api.get<Attempt>(`/attempts/${id}`),
   invitations: (params = "") => listQuery<Record<string, unknown>>(`/invitations/candidate-invitations${params}`, "invitations"),
   recruiterProfile: () => api.get<Record<string, unknown>>("/recruiters/me/profile"),
+  assessmentSubmissions: (id: string, params = "") => listQuery<Record<string, unknown>>(`/assessments/${id}/submissions${params}`, "submissions"),
 };
 
 async function listQuery<T>(path: string, key: string): Promise<Paginated<T>> {
