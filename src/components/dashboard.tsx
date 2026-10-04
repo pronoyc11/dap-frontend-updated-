@@ -232,9 +232,15 @@ export function CandidateOverview() {
                     {attempt.assessment?.title ?? "Assessment attempt"}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {attempt.score !== undefined
-                      ? `${attempt.score}/${attempt.maxScore ?? "—"} points`
-                      : "Awaiting submission"}
+                    {attempt.status === "EVALUATED"
+                      ? `${attempt.totalScore ?? 0}/${attempt.maxScore ?? "—"} points · evaluation complete`
+                      : attempt.status === "SUBMITTED"
+                      ? "Submitted · awaiting written evaluation"
+                      : attempt.status === "CANCELLED"
+                      ? "Attempt cancelled"
+                      : attempt.status === "IN_PROGRESS"
+                      ? "Attempt in progress"
+                      : "Ready to start"}
                   </p>
                 </div>
                 <Badge
