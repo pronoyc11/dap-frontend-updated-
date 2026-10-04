@@ -1,0 +1,9 @@
+import { cn } from "@/lib/utils";
+
+export function Button({ className, variant = "primary", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" | "danger" }) {
+  return <button className={cn("inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-50", { "bg-cyan-400 text-slate-950 hover:bg-cyan-300": variant === "primary", "border border-white/10 bg-white/5 text-white hover:bg-white/10": variant === "secondary", "text-slate-300 hover:bg-white/5": variant === "ghost", "bg-rose-500/15 text-rose-300 hover:bg-rose-500/25": variant === "danger" }, className)} {...props} />;
+}
+export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) { return <div className={cn("rounded-2xl border border-white/10 bg-white/[0.045] p-5 shadow-xl shadow-slate-950/20", className)} {...props} />; }
+export function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "success" | "warning" | "danger" }) { return <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold", { "bg-white/10 text-slate-300": tone === "neutral", "bg-emerald-400/15 text-emerald-300": tone === "success", "bg-amber-400/15 text-amber-300": tone === "warning", "bg-rose-400/15 text-rose-300": tone === "danger" })}>{children}</span>; }
+export function Skeleton({ className }: { className?: string }) { return <div className={cn("animate-pulse rounded-xl bg-white/10", className)} />; }
+export function EmptyState({ title, description }: { title: string; description: string }) { return <div className="rounded-2xl border border-dashed border-white/15 px-6 py-14 text-center"><p className="font-semibold text-white">{title}</p><p className="mt-2 text-sm text-slate-400">{description}</p></div>; }
