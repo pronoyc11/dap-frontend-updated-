@@ -16,11 +16,13 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { api } from "@/lib/api";
+import { queries } from "@/lib/queries";
 import { initials } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth";
 import type { Role } from "@/lib/types";
 import { ThemeToggle } from "./theme-toggle";
-import { useCurrentUser, useLogout } from "@/features/auth/hooks/use-auth";
-import { dashboardForUser } from "@/features/auth/utils/auth.utils";
+import { toast } from "sonner";
 
 const nav: Record<
   Role,
@@ -31,6 +33,7 @@ const nav: Record<
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/applications", label: "Applications", icon: ShieldCheck },
     { href: "/admin/audit-logs", label: "Audit logs", icon: FileText },
+    { href: "/admin/profile", label: "Profile", icon: UserRound },
   ],
   RECRUITER: [
     { href: "/recruiter", label: "Overview", icon: LayoutDashboard },
@@ -41,6 +44,7 @@ const nav: Record<
       icon: ClipboardList,
     },
     { href: "/recruiter/submissions", label: "Submissions", icon: BarChart3 },
+    { href: "/recruiter/candidates", label: "Candidates", icon: Users },
     { href: "/recruiter/profile", label: "Company profile", icon: Settings },
   ],
   CANDIDATE: [
@@ -63,18 +67,39 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: user, isPending, isError } = useCurrentUser();
-  const logoutMutation = useLogout();
+  const { user, setUser } = useAuthStore();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (isError) router.replace("/login");
-    else if (user && user.role !== role) router.replace(dashboardForUser(user));
-  }, [isError, role, router, user]);
+    if (!user)
+      queries
+        .me()
+        .then((profile) => {
+          setUser(profile);
+          if (profile.role !== role)
+            router.replace(
+              profile.role === "ADMIN"
+                ? "/admin"
+                : profile.role === "RECRUITER"
+                ? "/recruiter"
+                : "/dashboard"
+            );
+        })
+        .catch(() => router.push("/login"));
+    else if (user.role !== role)
+      router.replace(
+        user.role === "ADMIN"
+          ? "/admin"
+          : user.role === "RECRUITER"
+          ? "/recruiter"
+          : "/dashboard"
+      );
+  }, [user, role, setUser, router]);
   async function logout() {
-    await logoutMutation.mutateAsync().catch(() => undefined);
-    router.replace("/login");
+    await api.post("/auth/logout").catch(() => undefined);
+    toast.success("Signed out successfully");
+    setUser(null);
+    router.push("/login");
   }
-  if (isPending || !user) return <div className="grid min-h-screen place-items-center bg-[#07111f] text-sm text-slate-400">Loading workspace…</div>;
   return (
     <div className="min-h-screen bg-[#07111f]">
       <aside

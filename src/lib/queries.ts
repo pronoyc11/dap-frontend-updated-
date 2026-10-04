@@ -26,5 +26,5 @@ export const queries = {
 async function listQuery<T>(path: string, key: string): Promise<Paginated<T>> {
   const response = await api.get<Record<string, unknown> & { pagination?: Paginated<T>["pagination"] }>(path);
   const values = response[key];
-  return { items: Array.isArray(values) ? values as T[] : [], pagination: response.pagination ?? { page: 1, limit: 10, total: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false } };
+  return { items: Array.isArray(values) ? values as T[] : [], pagination: response.pagination ?? { page: 1, limit: 10, total: 0, totalPages: 0 } };
 }

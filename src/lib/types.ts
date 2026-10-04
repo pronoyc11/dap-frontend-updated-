@@ -1,29 +1,21 @@
-export type Role = "CANDIDATE" | "RECRUITER" | "ADMIN";
-export type UserStatus = "ACTIVE" | "BLOCKED" | "SUSPENDED";
-export type RecruiterStatus = "NOT_REQUESTED" | "PENDING" | "APPROVED";
-export type AuthProvider = "LOCAL" | "GOOGLE";
+export type Role = "ADMIN" | "RECRUITER" | "CANDIDATE";
+export type Status = "ACTIVE" | "BLOCKED" | "SUSPENDED";
 
 export interface User {
   id: string;
   name: string;
   email: string;
   role: Role;
-  recruiterStatus: RecruiterStatus;
-  status: UserStatus;
-  avatarUrl: string | null;
-  emailVerified: boolean;
-  authProvider: AuthProvider;
-  createdAt: string;
-  updatedAt: string;
+  status: Status;
+  emailVerified?: boolean;
+  recruiterStatus?: string;
+  avatarUrl?: string | null;
+  createdAt?: string;
 }
 
-export interface ApiResponse<T> { success: true; message: string; data: T; }
-export interface ApiErrorResponse { success: false; message: string; errors: unknown[]; }
-export interface Pagination { page: number; limit: number; total: number; totalPages: number; hasNextPage: boolean; hasPreviousPage: boolean; }
+export interface ApiResponse<T> { success: boolean; message: string; data: T; }
+export interface Pagination { page: number; limit: number; total: number; totalPages: number; }
 export interface Paginated<T> { items: T[]; pagination: Pagination; }
-
-export interface AuthTokens { accessToken: string; refreshToken: string; }
-export interface LoginResult extends AuthTokens { user: Pick<User, "id" | "email" | "name" | "role" | "emailVerified" | "recruiterStatus">; }
 
 export interface Problem { id: string; title: string; question: string; type: "MCQ" | "WRITTEN"; options: string[]; correctAnswer?: string | null; expectedAnswer?: string | null; points: number; createdAt?: string; }
 export interface Assessment { id: string; title: string; description: string; durationMinutes: number; passingScore: number; status: "DRAFT" | "READY" | "PUBLISHED" | "CLOSED"; itemCount?: number; createdAt?: string; items?: AssessmentItem[]; }
