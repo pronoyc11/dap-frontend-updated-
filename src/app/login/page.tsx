@@ -7,6 +7,7 @@ import { BriefcaseBusiness, KeyRound, Shield, UserRound } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { Button, Card } from "@/components/ui";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const schema = z.object({ email: z.string().email("Enter a valid email"), password: z.string().min(8, "Use at least 8 characters") });
 const demos = [{ role: "ADMIN", label: "Admin", email: "admin@example.com", password: "AdminPass123!", icon: Shield, destination: "/admin" }, { role: "RECRUITER", label: "Recruiter", email: "recruiter@example.com", password: "RecruiterPass123!", icon: BriefcaseBusiness, destination: "/recruiter" }, { role: "CANDIDATE", label: "Candidate", email: "candidate@example.com", password: "CandidatePass123!", icon: UserRound, destination: "/dashboard" }] as const;
