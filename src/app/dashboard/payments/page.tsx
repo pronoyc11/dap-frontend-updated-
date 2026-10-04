@@ -1,2 +1,2 @@
-import { CandidatePayments } from "@/components/candidate-pages";
-export default function Payments() { return <CandidatePayments />; }
+import { CandidateResults } from "@/components/candidate-results";
+export default function Payments() { return <CandidateResults />; }
