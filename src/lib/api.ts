@@ -1,6 +1,8 @@
 import type { ApiResponse } from "./types";
 import { ApiError, isApiErrorResponse } from "./errors";
 
+export { ApiError } from "./errors";
+
 const SERVER_API_URL = process.env.API_BASE_URL ?? "http://localhost:5000/api/v1";
 const BROWSER_API_URL = "/api/backend";
 

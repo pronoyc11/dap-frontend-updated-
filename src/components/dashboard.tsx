@@ -1,5 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import {
   ArrowUpRight,
   ClipboardList,
@@ -8,12 +9,9 @@ import {
   Zap,
 } from "lucide-react";
 import { queries } from "@/lib/queries";
-import { Badge, Card, EmptyState, Skeleton } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
 import type {
   Assessment,
-  Dashboard as DashboardData,
-  Paginated,
-  Problem,
   Attempt,
 } from "@/lib/types";
 
@@ -51,7 +49,7 @@ export function AdminOverview() {
     return (
       <EmptyState
         title="Dashboard unavailable"
-        description="Start the backend and check your admin session."
+        description={error instanceof Error ? error.message : "Start the backend and check your admin session."}
       />
     );
   return (
@@ -64,42 +62,43 @@ export function AdminOverview() {
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total users"
-          value={Object.values(data.users ?? {}).reduce((a, b) => a + b, 0)}
+          value={data.users.total}
           detail="Across every role"
           icon={Users}
         />
         <StatCard
           label="Published assessments"
-          value={data.publishedAssessments}
-          detail={`${data.assessments} total assessments`}
+          value={data.assessments.published}
+          detail={`${data.assessments.total} total assessments`}
           icon={ClipboardList}
         />
         <StatCard
           label="Attempts"
-          value={data.attempts}
+          value={data.attempts.total}
           detail="Candidate activity"
           icon={Zap}
         />
         <StatCard
           label="Paid checkouts"
-          value={data.paidPayments}
-          detail={`${data.payments} total payments`}
+          value={data.payments.paid}
+          detail={`${data.payments.total} total payments`}
           icon={CreditCard}
         />
       </div>
       <Card className="mt-6">
         <h2 className="font-bold text-white">Role distribution</h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
-          {Object.entries(data.users ?? {}).map(([role, count]) => (
+          {(["candidates", "recruiters", "admins"] as const).map((role) => (
             <div key={role} className="rounded-xl bg-white/[.04] p-4">
               <p className="text-xs uppercase tracking-wider text-slate-500">
                 {role}
               </p>
-              <p className="mt-2 text-2xl font-black text-white">{count}</p>
+              <p className="mt-2 text-2xl font-black text-white">{data.users[role]}</p>
             </div>
           ))}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Admin operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/admin/users"><Button variant="secondary">Manage users</Button></Link><Link href="/admin/applications"><Button variant="secondary">Review recruiter applications</Button></Link><Link href="/admin/audit-logs"><Button variant="secondary">View audit logs</Button></Link></div></Card>
     </>
   );
 }
@@ -175,6 +174,7 @@ export function RecruiterOverview() {
           )}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Authoring operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/recruiter/problems/new"><Button>New problem</Button></Link><Link href="/recruiter/problems"><Button variant="secondary">Manage problem bank</Button></Link><Link href="/recruiter/assessments/new"><Button>New assessment</Button></Link><Link href="/recruiter/assessments"><Button variant="secondary">Manage assessments</Button></Link><Link href="/recruiter/submissions"><Button variant="secondary">Review submissions</Button></Link><Link href="/recruiter/profile"><Button variant="secondary">Edit company profile</Button></Link></div></Card>
     </>
   );
 }
@@ -232,9 +232,15 @@ export function CandidateOverview() {
                     {attempt.assessment?.title ?? "Assessment attempt"}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {attempt.score !== undefined
-                      ? `${attempt.score}/${attempt.maxScore ?? "—"} points`
-                      : "Awaiting submission"}
+                    {attempt.status === "EVALUATED"
+                      ? `${attempt.totalScore ?? 0}/${attempt.maxScore ?? "—"} points · evaluation complete`
+                      : attempt.status === "SUBMITTED"
+                      ? "Submitted · awaiting written evaluation"
+                      : attempt.status === "CANCELLED"
+                      ? "Attempt cancelled"
+                      : attempt.status === "IN_PROGRESS"
+                      ? "Attempt in progress"
+                      : "Ready to start"}
                   </p>
                 </div>
                 <Badge
@@ -252,6 +258,7 @@ export function CandidateOverview() {
           )}
         </div>
       </Card>
+      <Card className="mt-6"><h2 className="font-bold text-white">Candidate actions</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/dashboard/invitations"><Button>View invitations</Button></Link><Link href="/dashboard/profile"><Button variant="secondary">Update profile</Button></Link><Link href="/dashboard/payments"><Button variant="secondary">View results</Button></Link></div></Card>
     </>
   );
 }

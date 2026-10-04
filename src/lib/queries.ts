@@ -5,8 +5,10 @@ export const queries = {
   me: () => api.get<User>("/users/me"),
   adminDashboard: () => api.get<Dashboard>("/admin/dashboard"),
   adminUsers: (params = "") => listQuery<User>(`/admin/users${params}`, "users"),
+  adminUser: (id: string) => api.get<User>(`/admin/users/${id}`),
   applications: (params = "") => listQuery<User>(`/admin/recruiter-applications${params}`, "applications"),
   auditLogs: (params = "") => listQuery<Record<string, unknown>>(`/admin/audit-logs${params}`, "logs"),
+  auditLog: (id: string) => api.get<Record<string, unknown>>(`/admin/audit-logs/${id}`),
   problems: (params = "") => listQuery<Problem>(`/problems${params}`, "problems"),
   problem: (id: string) => api.get<Problem>(`/problems/${id}`),
   assessments: (params = "") => listQuery<Assessment>(`/assessments${params}`, "assessments"),
@@ -15,6 +17,10 @@ export const queries = {
   attempt: (id: string) => api.get<Attempt>(`/attempts/${id}`),
   invitations: (params = "") => listQuery<Record<string, unknown>>(`/invitations/candidate-invitations${params}`, "invitations"),
   recruiterProfile: () => api.get<Record<string, unknown>>("/recruiters/me/profile"),
+  assessmentSubmissions: (id: string, params = "") => listQuery<Record<string, unknown>>(`/assessments/${id}/submissions${params}`, "submissions"),
+  assessmentCandidates: (id: string, params = "") => listQuery<Record<string, unknown>>(`/assessments/${id}/candidates${params}`, "candidates"),
+  candidates: (params = "") => listQuery<User>(`/users/candidates${params}`, "candidates"),
+  candidate: (id: string) => api.get<User>(`/users/candidates/${id}`),
 };
 
 async function listQuery<T>(path: string, key: string): Promise<Paginated<T>> {

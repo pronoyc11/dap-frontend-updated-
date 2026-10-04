@@ -1,2 +1,2 @@
-import { InvitationsPage } from "@/components/candidate-pages";
-export default function Invitations() { return <InvitationsPage />; }
+import { CandidateInvitations } from "@/components/candidate-invitations";
+export default function Invitations() { return <CandidateInvitations />; }
