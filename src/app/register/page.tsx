@@ -46,7 +46,7 @@ export default function Register() {
       <div className="w-full max-w-lg min-w-0">
         <header className="mb-7 flex flex-wrap items-center justify-between gap-3 sm:mb-8">
           <Link href="/" className="flex items-center gap-2 font-black tracking-tight text-white"><span className="grid size-8 place-items-center rounded-lg bg-cyan-400 text-sm text-slate-950">A</span>atlas<span className="text-cyan-300">/</span>DAP</Link>
-          <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm text-slate-400 sm:gap-5"><Link className="hover:text-cyan-300" href="/about">Platform</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/services">Solutions</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/pricing">Pricing</Link><Link className="hover:text-cyan-300" href="/contact">Contact</Link><Link className="font-semibold text-cyan-300" href="/login">Sign in</Link></nav>
+          <nav className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 text-sm text-slate-400 sm:gap-5"><Link className="hidden hover:text-cyan-300 sm:inline" href="/about">Platform</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/services">Solutions</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/pricing">Pricing</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/contact">Contact</Link><Link className="font-semibold text-cyan-300" href="/login">Sign in</Link></nav>
         </header>
         <Card className="min-w-0 p-4 sm:p-6">
           <h1 className="text-3xl font-black text-white">Create your workspace</h1>
