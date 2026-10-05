@@ -11,7 +11,248 @@ import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@
 import { PageIntro } from "./dashboard";
 import type { User } from "@/lib/types";
 
-function params(values: Record<string, string | number>) { return `?${new URLSearchParams(Object.entries(values).map(([key, value]) => [key, String(value)])).toString()}`; }
-export function AdminUsers() { const searchParams = useSearchParams(); const router = useRouter(); const queryClient = useQueryClient(); const [pendingUserId, setPendingUserId] = useState<string | null>(null); const search = searchParams.get("search") ?? ""; const page = Number(searchParams.get("page") ?? 1); const { data, isLoading } = useQuery({ queryKey: ["admin-users", page, search], queryFn: () => queries.adminUsers(params({ page, limit: 15, ...(search ? { search } : {}) })) }); async function changeStatus(user: User, status: "ACTIVE" | "SUSPENDED") { if (pendingUserId) return; setPendingUserId(user.id); try { await api.patch(`/admin/users/${user.id}/status`, { status }); toast.success(`${user.name} is now ${status.toLowerCase()}`); await queryClient.invalidateQueries({ queryKey: ["admin-users"] }); } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Unable to update user status"); } finally { setPendingUserId(null); } } return <><PageIntro eyebrow="Platform control" title="User directory" description="Search, inspect, suspend, and activate platform users." /><form className="mt-8" onSubmit={(event) => { event.preventDefault(); const value = new FormData(event.currentTarget).get("search")?.toString() ?? ""; router.push(`/admin/users?${new URLSearchParams({ ...(value ? { search: value } : {}) }).toString()}`); }}><input name="search" defaultValue={search} placeholder="Search by name or email…" className="w-full rounded-xl border border-white/10 bg-white/[.04] px-4 py-3 text-white" /></form><Card className="mt-5 p-0"><div className="divide-y divide-white/10">{isLoading ? [1, 2, 3].map((i) => <Skeleton className="m-5 h-16" key={i} />) : data?.items.length ? data.items.map((user: User) => <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between" key={user.id}><Link href={`/admin/users/${user.id}`} className="min-w-0"><p className="font-semibold text-white">{user.name}</p><p className="text-sm text-slate-500">{user.email}</p></Link><div className="flex flex-wrap items-center gap-2"><Badge>{user.role}</Badge><Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>{user.status}</Badge>{user.status === "ACTIVE" ? <Button type="button" variant="danger" disabled={pendingUserId !== null} onClick={() => void changeStatus(user, "SUSPENDED")}>{pendingUserId === user.id ? "Updating…" : "Suspend"}</Button> : <Button type="button" disabled={pendingUserId !== null} onClick={() => void changeStatus(user, "ACTIVE")}>{pendingUserId === user.id ? "Updating…" : "Activate"}</Button>}</div></div>) : <div className="p-5"><EmptyState title="No users found" description="Try a different search." /></div>}</div><PaginationControls page={data?.pagination.page ?? page} totalPages={data?.pagination.totalPages ?? 0} onPage={(next) => router.push(`/admin/users?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`)} /></Card></>; }
-export function AdminApplications() { const queryClient = useQueryClient(); const [pending, setPending] = useState<string | null>(null); const { data, isLoading } = useQuery({ queryKey: ["applications"], queryFn: () => queries.applications("?page=1&limit=30") }); async function decide(user: User, action: "approve" | "reject") { setPending(`${action}:${user.id}`); try { await api.patch(`/admin/recruiter-applications/${user.id}/${action}`); toast.success(`${user.name} ${action === "approve" ? "approved as a recruiter" : "recruiter application rejected"}`); await queryClient.invalidateQueries({ queryKey: ["applications"] }); } catch (cause) { toast.error(cause instanceof Error ? cause.message : `Unable to ${action} recruiter application`); } finally { setPending(null); } } return <><PageIntro eyebrow="Platform control" title="Recruiter applications" description="Review pending recruiting teams before granting authoring access." /><Card className="mt-8 p-0"><div className="divide-y divide-white/10">{isLoading ? <Skeleton className="m-5 h-16" /> : data?.items.length ? data.items.map((user: User) => <div className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between" key={user.id}><div><p className="font-semibold text-white">{user.name}</p><p className="text-sm text-slate-500">{user.email}</p></div><div className="flex flex-wrap items-center gap-3"><Badge tone="warning">PENDING</Badge><Button type="button" disabled={pending !== null} onClick={() => void decide(user, "approve")}>{pending === `approve:${user.id}` ? "Approving…" : "Approve recruiter"}</Button><Button type="button" variant="danger" disabled={pending !== null} onClick={() => void decide(user, "reject")}>{pending === `reject:${user.id}` ? "Rejecting…" : "Reject"}</Button></div></div>) : <div className="p-5"><EmptyState title="No pending applications" description="New recruiter requests will appear here." /></div>}</div></Card></>; }
-export function AuditLogs() { const searchParams = useSearchParams(); const router = useRouter(); const page = Number(searchParams.get("page") ?? 1); const { data, isLoading } = useQuery({ queryKey: ["audit-logs", page], queryFn: () => queries.auditLogs(params({ page, limit: 20, sortOrder: "desc" })) }); return <><PageIntro eyebrow="Platform control" title="Audit logs" description="Read-only activity records for sensitive platform operations." /><Card className="mt-8 p-0"><div className="divide-y divide-white/10">{isLoading ? <Skeleton className="m-5 h-20" /> : data?.items.length ? data.items.map((log, index) => <Link href={`/admin/audit-logs/${String(log.id)}`} className="block rounded-xl p-4 hover:bg-white/[.04]" key={String(log.id ?? index)}><p className="font-semibold text-white">{String(log.action ?? "Platform activity")}</p><p className="mt-1 text-xs text-slate-500">{String(log.entity ?? "—")} · {String(log.createdAt ?? "")}</p></Link>) : <div className="p-5"><EmptyState title="No audit records" description="There is no recorded activity for this view." /></div>}<PaginationControls page={data?.pagination.page ?? page} totalPages={data?.pagination.totalPages ?? 0} onPage={(next) => router.push(`/admin/audit-logs?page=${next}`)} /></div></Card></>; }
+function params(values: Record<string, string | number>) {
+  return `?${new URLSearchParams(
+    Object.entries(values).map(([key, value]) => [key, String(value)]),
+  ).toString()}`;
+}
+export function AdminUsers() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const search = searchParams.get("search") ?? "";
+  const page = Number(searchParams.get("page") ?? 1);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-users", page, search],
+    queryFn: () => queries.adminUsers(params({ page, limit: 15, ...(search ? { search } : {}) })),
+  });
+  async function changeStatus(user: User, status: "ACTIVE" | "SUSPENDED") {
+    if (pendingUserId) return;
+    setPendingUserId(user.id);
+    try {
+      await api.patch(`/admin/users/${user.id}/status`, { status });
+      toast.success(`${user.name} is now ${status.toLowerCase()}`);
+      await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to update user status");
+    } finally {
+      setPendingUserId(null);
+    }
+  }
+  return (
+    <>
+      <PageIntro
+        eyebrow="Platform control"
+        title="User directory"
+        description="Search, inspect, suspend, and activate platform users."
+      />
+      <form
+        className="mt-8"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const value = new FormData(event.currentTarget).get("search")?.toString() ?? "";
+          router.push(
+            `/admin/users?${new URLSearchParams({
+              ...(value ? { search: value } : {}),
+            }).toString()}`,
+          );
+        }}
+      >
+        <input
+          name="search"
+          defaultValue={search}
+          placeholder="Search by name or email…"
+          className="w-full rounded-xl border border-white/10 bg-white/[.04] px-4 py-3 text-white"
+        />
+      </form>
+      <Card className="mt-5 p-0">
+        <div className="divide-y divide-white/10">
+          {isLoading ? (
+            [1, 2, 3].map((i) => <Skeleton className="m-5 h-16" key={i} />)
+          ) : data?.items.length ? (
+            data.items.map((user: User) => (
+              <div
+                className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between"
+                key={user.id}
+              >
+                <Link href={`/admin/users/${user.id}`} className="min-w-0">
+                  <p className="font-semibold text-white">{user.name}</p>
+                  <p className="text-sm text-slate-500">{user.email}</p>
+                </Link>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge>{user.role}</Badge>
+                  <Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>
+                    {user.status}
+                  </Badge>
+                  {user.status === "ACTIVE" ? (
+                    <Button
+                      type="button"
+                      variant="danger"
+                      disabled={pendingUserId !== null}
+                      onClick={() => void changeStatus(user, "SUSPENDED")}
+                    >
+                      {pendingUserId === user.id ? "Updating…" : "Suspend"}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      disabled={pendingUserId !== null}
+                      onClick={() => void changeStatus(user, "ACTIVE")}
+                    >
+                      {pendingUserId === user.id ? "Updating…" : "Activate"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-5">
+              <EmptyState title="No users found" description="Try a different search." />
+            </div>
+          )}
+        </div>
+        <PaginationControls
+          page={data?.pagination.page ?? page}
+          totalPages={data?.pagination.totalPages ?? 0}
+          onPage={(next) =>
+            router.push(
+              `/admin/users?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+            )
+          }
+        />
+      </Card>
+    </>
+  );
+}
+export function AdminApplications() {
+  const queryClient = useQueryClient();
+  const [pending, setPending] = useState<string | null>(null);
+  const { data, isLoading } = useQuery({
+    queryKey: ["applications"],
+    queryFn: () => queries.applications("?page=1&limit=30"),
+  });
+  async function decide(user: User, action: "approve" | "reject") {
+    setPending(`${action}:${user.id}`);
+    try {
+      await api.patch(`/admin/recruiter-applications/${user.id}/${action}`);
+      toast.success(
+        `${user.name} ${
+          action === "approve" ? "approved as a recruiter" : "recruiter application rejected"
+        }`,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["applications"] });
+    } catch (cause) {
+      toast.error(
+        cause instanceof Error ? cause.message : `Unable to ${action} recruiter application`,
+      );
+    } finally {
+      setPending(null);
+    }
+  }
+  return (
+    <>
+      <PageIntro
+        eyebrow="Platform control"
+        title="Recruiter applications"
+        description="Review pending recruiting teams before granting authoring access."
+      />
+      <Card className="mt-8 p-0">
+        <div className="divide-y divide-white/10">
+          {isLoading ? (
+            <Skeleton className="m-5 h-16" />
+          ) : data?.items.length ? (
+            data.items.map((user: User) => (
+              <div
+                className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between"
+                key={user.id}
+              >
+                <div>
+                  <p className="font-semibold text-white">{user.name}</p>
+                  <p className="text-sm text-slate-500">{user.email}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge tone="warning">PENDING</Badge>
+                  <Button
+                    type="button"
+                    disabled={pending !== null}
+                    onClick={() => void decide(user, "approve")}
+                  >
+                    {pending === `approve:${user.id}` ? "Approving…" : "Approve recruiter"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    disabled={pending !== null}
+                    onClick={() => void decide(user, "reject")}
+                  >
+                    {pending === `reject:${user.id}` ? "Rejecting…" : "Reject"}
+                  </Button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-5">
+              <EmptyState
+                title="No pending applications"
+                description="New recruiter requests will appear here."
+              />
+            </div>
+          )}
+        </div>
+      </Card>
+    </>
+  );
+}
+export function AuditLogs() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = Number(searchParams.get("page") ?? 1);
+  const { data, isLoading } = useQuery({
+    queryKey: ["audit-logs", page],
+    queryFn: () => queries.auditLogs(params({ page, limit: 20, sortOrder: "desc" })),
+  });
+  return (
+    <>
+      <PageIntro
+        eyebrow="Platform control"
+        title="Audit logs"
+        description="Read-only activity records for sensitive platform operations."
+      />
+      <Card className="mt-8 p-0">
+        <div className="divide-y divide-white/10">
+          {isLoading ? (
+            <Skeleton className="m-5 h-20" />
+          ) : data?.items.length ? (
+            data.items.map((log, index) => (
+              <Link
+                href={`/admin/audit-logs/${String(log.id)}`}
+                className="block rounded-xl p-4 hover:bg-white/[.04]"
+                key={String(log.id ?? index)}
+              >
+                <p className="font-semibold text-white">
+                  {String(log.action ?? "Platform activity")}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {String(log.entity ?? "—")} · {String(log.createdAt ?? "")}
+                </p>
+              </Link>
+            ))
+          ) : (
+            <div className="p-5">
+              <EmptyState
+                title="No audit records"
+                description="There is no recorded activity for this view."
+              />
+            </div>
+          )}
+          <PaginationControls
+            page={data?.pagination.page ?? page}
+            totalPages={data?.pagination.totalPages ?? 0}
+            onPage={(next) => router.push(`/admin/audit-logs?page=${next}`)}
+          />
+        </div>
+      </Card>
+    </>
+  );
+}

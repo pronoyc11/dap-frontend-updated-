@@ -1,2 +1,4 @@
 import { AssessmentList } from "@/components/resource-list";
-export default function AssessmentsPage() { return <AssessmentList />; }
+export default function AssessmentsPage() {
+  return <AssessmentList />;
+}

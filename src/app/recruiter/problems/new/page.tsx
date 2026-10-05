@@ -1,2 +1,4 @@
 import { ProblemForm } from "@/components/author-forms";
-export default function NewProblemPage() { return <ProblemForm />; }
+export default function NewProblemPage() {
+  return <ProblemForm />;
+}

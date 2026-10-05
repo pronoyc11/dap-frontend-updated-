@@ -56,10 +56,13 @@ export default function PaymentSuccessPage() {
       <Card className="w-full max-w-lg text-center">
         {timedOut ? (
           <>
-            <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-300">Payment received</p>
+            <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-300">
+              Payment received
+            </p>
             <h1 className="mt-4 text-2xl font-black text-white">Publication is still processing</h1>
             <p className="mt-3 text-sm text-slate-400">
-              Stripe has confirmed the payment, but the backend webhook has not finished updating the assessment yet.
+              Stripe has confirmed the payment, but the backend webhook has not finished updating
+              the assessment yet.
             </p>
             <button
               type="button"
@@ -74,7 +77,8 @@ export default function PaymentSuccessPage() {
             <Skeleton className="mx-auto h-3 w-32" />
             <h1 className="mt-5 text-2xl font-black text-white">Confirming your payment</h1>
             <p className="mt-3 text-sm text-slate-400">
-              We are waiting for Stripe to finish processing the payment and publish your assessment.
+              We are waiting for Stripe to finish processing the payment and publish your
+              assessment.
             </p>
             <div className="mx-auto mt-6 size-8 animate-spin rounded-full border-2 border-white/20 border-t-cyan-300" />
           </>

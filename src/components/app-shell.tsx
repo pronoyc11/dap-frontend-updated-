@@ -26,10 +26,7 @@ import { toast } from "sonner";
 import { clearSessionHint } from "@/lib/session";
 import { useQueryClient } from "@tanstack/react-query";
 
-const nav: Record<
-  Role,
-  { href: string; label: string; icon: typeof LayoutDashboard }[]
-> = {
+const nav: Record<Role, { href: string; label: string; icon: typeof LayoutDashboard }[]> = {
   ADMIN: [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
@@ -60,13 +57,7 @@ const nav: Record<
     { href: "/dashboard/profile", label: "Profile", icon: UserRound },
   ],
 };
-export function AppShell({
-  children,
-  role,
-}: {
-  children: React.ReactNode;
-  role: Role;
-}) {
+export function AppShell({ children, role }: { children: React.ReactNode; role: Role }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, setUser } = useAuthStore();
@@ -83,18 +74,14 @@ export function AppShell({
               profile.role === "ADMIN"
                 ? "/admin"
                 : profile.role === "RECRUITER"
-                ? "/recruiter"
-                : "/dashboard"
+                  ? "/recruiter"
+                  : "/dashboard",
             );
         })
         .catch(() => router.push("/login"));
     else if (user.role !== role)
       router.replace(
-        user.role === "ADMIN"
-          ? "/admin"
-          : user.role === "RECRUITER"
-          ? "/recruiter"
-          : "/dashboard"
+        user.role === "ADMIN" ? "/admin" : user.role === "RECRUITER" ? "/recruiter" : "/dashboard",
       );
   }, [user, role, setUser, router]);
   async function logout() {
@@ -108,7 +95,13 @@ export function AppShell({
   }
   return (
     <div className="min-h-screen bg-[#07111f]">
-      {open && <button aria-label="Close navigation" className="fixed inset-0 z-20 bg-slate-950/60 lg:hidden" onClick={() => setOpen(false)} />}
+      {open && (
+        <button
+          aria-label="Close navigation"
+          className="fixed inset-0 z-20 bg-slate-950/60 lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-[min(18rem,calc(100vw-2rem))] overflow-y-auto border-r border-white/10 bg-[#0a1728] p-5 pb-28 transition-transform lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
@@ -148,9 +141,7 @@ export function AppShell({
               {initials(user?.name)}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">
-                {user?.name ?? "Loading"}
-              </p>
+              <p className="truncate text-sm font-semibold text-white">{user?.name ?? "Loading"}</p>
               <p className="text-xs text-slate-500">{role}</p>
             </div>
           </div>
@@ -174,8 +165,8 @@ export function AppShell({
               {role === "ADMIN"
                 ? "Platform control"
                 : role === "RECRUITER"
-                ? "Recruiting workspace"
-                : "Candidate workspace"}
+                  ? "Recruiting workspace"
+                  : "Candidate workspace"}
             </span>
             <span className="size-2 rounded-full bg-emerald-400" />
           </div>

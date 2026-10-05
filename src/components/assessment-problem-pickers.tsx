@@ -13,27 +13,322 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
 import { PageIntro } from "@/components/dashboard";
 
-function listParams(page: number, search: string) { return `?page=${page}&limit=10${search ? `&search=${encodeURIComponent(search)}` : ""}`; }
+function listParams(page: number, search: string) {
+  return `?page=${page}&limit=10${search ? `&search=${encodeURIComponent(search)}` : ""}`;
+}
 
 export function AssessmentProblemPicker() {
-  const { id } = useParams<{ id: string }>(); const router = useRouter(); const params = useSearchParams(); const queryClient = useQueryClient();
-  const page = Number(params.get("page") ?? 1); const [input, setInput] = useState(params.get("search") ?? ""); const search = useDebouncedValue(input); const [selected, setSelected] = useState<string[]>([]); const [pending, setPending] = useState(false);
-  const assessment = useQuery({ queryKey: ["assessment", id], queryFn: () => queries.assessment(id) }); const problems = useQuery({ queryKey: ["assessment-problem-picker", page, search], queryFn: () => queries.problems(listParams(page, search)) });
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const params = useSearchParams();
+  const queryClient = useQueryClient();
+  const page = Number(params.get("page") ?? 1);
+  const [input, setInput] = useState(params.get("search") ?? "");
+  const search = useDebouncedValue(input);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [pending, setPending] = useState(false);
+  const assessment = useQuery({
+    queryKey: ["assessment", id],
+    queryFn: () => queries.assessment(id),
+  });
+  const problems = useQuery({
+    queryKey: ["assessment-problem-picker", page, search],
+    queryFn: () => queries.problems(listParams(page, search)),
+  });
   const existing = new Set((assessment.data?.items ?? []).map((item) => item.problemId));
-  function updateSearch(value: string) { setInput(value); router.replace(`/recruiter/assessments/${id}/problems${value ? `?search=${encodeURIComponent(value)}` : ""}`, { scroll: false }); }
-  function toggle(problemId: string) { setSelected((current) => current.includes(problemId) ? current.filter((value) => value !== problemId) : [...current, problemId]); }
-  async function addSelected() { const additions = selected.filter((problemId) => !existing.has(problemId)); if (!additions.length) { toast.error("Select at least one new problem."); return; } setPending(true); try { const startOrder = (assessment.data?.items?.length ?? 0) + 1; await api.post(`/assessments/${id}/items/bulk`, { items: additions.map((problemId, index) => ({ problemId, order: startOrder + index })) }); toast.success(`${additions.length} problem${additions.length === 1 ? "" : "s"} added to the assessment`); await queryClient.invalidateQueries({ queryKey: ["assessment", id] }); router.push(`/recruiter/assessments/${id}`); } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Unable to add problems"); } finally { setPending(false); } }
+  function updateSearch(value: string) {
+    setInput(value);
+    router.replace(
+      `/recruiter/assessments/${id}/problems${value ? `?search=${encodeURIComponent(value)}` : ""}`,
+      { scroll: false },
+    );
+  }
+  function toggle(problemId: string) {
+    setSelected((current) =>
+      current.includes(problemId)
+        ? current.filter((value) => value !== problemId)
+        : [...current, problemId],
+    );
+  }
+  async function addSelected() {
+    const additions = selected.filter((problemId) => !existing.has(problemId));
+    if (!additions.length) {
+      toast.error("Select at least one new problem.");
+      return;
+    }
+    setPending(true);
+    try {
+      const startOrder = (assessment.data?.items?.length ?? 0) + 1;
+      await api.post(`/assessments/${id}/items/bulk`, {
+        items: additions.map((problemId, index) => ({ problemId, order: startOrder + index })),
+      });
+      toast.success(
+        `${additions.length} problem${additions.length === 1 ? "" : "s"} added to the assessment`,
+      );
+      await queryClient.invalidateQueries({ queryKey: ["assessment", id] });
+      router.push(`/recruiter/assessments/${id}`);
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to add problems");
+    } finally {
+      setPending(false);
+    }
+  }
   if (assessment.isLoading) return <Skeleton className="h-96" />;
-  return <div className="max-w-4xl"><PageIntro eyebrow="Assessment authoring" title={`Add problems to ${assessment.data?.title ?? "assessment"}`} description="Select multiple problems from your problem bank and add them as snapshots." /><div className="mt-6 flex flex-wrap items-center gap-3"><Link href={`/recruiter/assessments/${id}`}><Button type="button" variant="secondary"><ArrowLeft className="mr-2 size-4" />Back to assessment</Button></Link><Badge>{selected.length} selected</Badge><Button type="button" className="ml-auto" disabled={pending || !selected.length} onClick={() => void addSelected()}>{pending ? "Adding…" : "Add selected problems"}</Button></div><div className="relative mt-8"><Search className="absolute left-3 top-3 size-4 text-slate-500" /><input value={input} onChange={(event) => updateSearch(event.target.value)} placeholder="Search your problems…" className="w-full rounded-xl border border-white/10 bg-white/[.04] py-2.5 pl-10 pr-4 text-white" /></div><Card className="mt-5 p-0"><div className="divide-y divide-white/10">{problems.isLoading ? [1, 2, 3].map((item) => <Skeleton key={item} className="m-5 h-20" />) : problems.data?.items.length ? problems.data.items.map((problem: Problem) => { const included = existing.has(problem.id); const checked = selected.includes(problem.id); return <label key={problem.id} className={`flex items-start gap-4 p-5 ${included ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-white/[.04]"}`}><input type="checkbox" checked={included || checked} disabled={included} onChange={() => toggle(problem.id)} className="mt-1 size-4 accent-cyan-400" /><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-2"><span className="font-semibold text-white">{problem.title}</span><Badge>{problem.type}</Badge>{included && <span className="text-xs text-emerald-300">Already added</span>}</span><span className="mt-1 block text-sm text-slate-400">{problem.question}</span><span className="mt-2 block text-xs text-slate-500">{problem.points} points</span></span>{checked && !included && <Check className="mt-1 size-5 text-cyan-300" />}</label>; }) : <div className="p-5"><EmptyState title="No problems found" description="Create a problem or change your search." /></div>}<PaginationControls page={problems.data?.pagination.page ?? page} totalPages={problems.data?.pagination.totalPages ?? 0} onPage={(next) => router.push(`/recruiter/assessments/${id}/problems?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`)} /></div></Card></div>;
+  return (
+    <div className="max-w-4xl">
+      <PageIntro
+        eyebrow="Assessment authoring"
+        title={`Add problems to ${assessment.data?.title ?? "assessment"}`}
+        description="Select multiple problems from your problem bank and add them as snapshots."
+      />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <Link href={`/recruiter/assessments/${id}`}>
+          <Button type="button" variant="secondary">
+            <ArrowLeft className="mr-2 size-4" />
+            Back to assessment
+          </Button>
+        </Link>
+        <Badge>{selected.length} selected</Badge>
+        <Button
+          type="button"
+          className="ml-auto"
+          disabled={pending || !selected.length}
+          onClick={() => void addSelected()}
+        >
+          {pending ? "Adding…" : "Add selected problems"}
+        </Button>
+      </div>
+      <div className="relative mt-8">
+        <Search className="absolute left-3 top-3 size-4 text-slate-500" />
+        <input
+          value={input}
+          onChange={(event) => updateSearch(event.target.value)}
+          placeholder="Search your problems…"
+          className="w-full rounded-xl border border-white/10 bg-white/[.04] py-2.5 pl-10 pr-4 text-white"
+        />
+      </div>
+      <Card className="mt-5 p-0">
+        <div className="divide-y divide-white/10">
+          {problems.isLoading ? (
+            [1, 2, 3].map((item) => <Skeleton key={item} className="m-5 h-20" />)
+          ) : problems.data?.items.length ? (
+            problems.data.items.map((problem: Problem) => {
+              const included = existing.has(problem.id);
+              const checked = selected.includes(problem.id);
+              return (
+                <label
+                  key={problem.id}
+                  className={`flex items-start gap-4 p-5 ${included ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-white/[.04]"}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={included || checked}
+                    disabled={included}
+                    onChange={() => toggle(problem.id)}
+                    className="mt-1 size-4 accent-cyan-400"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-white">{problem.title}</span>
+                      <Badge>{problem.type}</Badge>
+                      {included && <span className="text-xs text-emerald-300">Already added</span>}
+                    </span>
+                    <span className="mt-1 block text-sm text-slate-400">{problem.question}</span>
+                    <span className="mt-2 block text-xs text-slate-500">
+                      {problem.points} points
+                    </span>
+                  </span>
+                  {checked && !included && <Check className="mt-1 size-5 text-cyan-300" />}
+                </label>
+              );
+            })
+          ) : (
+            <div className="p-5">
+              <EmptyState
+                title="No problems found"
+                description="Create a problem or change your search."
+              />
+            </div>
+          )}
+          <PaginationControls
+            page={problems.data?.pagination.page ?? page}
+            totalPages={problems.data?.pagination.totalPages ?? 0}
+            onPage={(next) =>
+              router.push(
+                `/recruiter/assessments/${id}/problems?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+              )
+            }
+          />
+        </div>
+      </Card>
+    </div>
+  );
 }
 
 export function ProblemAssessmentPicker() {
-  const { id: problemId } = useParams<{ id: string }>(); const router = useRouter(); const params = useSearchParams();
-  const page = Number(params.get("page") ?? 1); const [input, setInput] = useState(params.get("search") ?? ""); const search = useDebouncedValue(input); const [selected, setSelected] = useState<string[]>([]); const [pending, setPending] = useState(false);
-  const problem = useQuery({ queryKey: ["problem", problemId], queryFn: () => queries.problem(problemId) }); const assessments = useQuery({ queryKey: ["problem-assessment-picker", page, search], queryFn: () => queries.assessments(listParams(page, search)) });
-  function updateSearch(value: string) { setInput(value); router.replace(`/recruiter/problems/${problemId}/add${value ? `?search=${encodeURIComponent(value)}` : ""}`, { scroll: false }); }
-  function toggle(assessmentId: string) { setSelected((current) => current.includes(assessmentId) ? current.filter((value) => value !== assessmentId) : [...current, assessmentId]); }
-  async function addToSelected() { if (!selected.length) { toast.error("Select at least one assessment."); return; } setPending(true); try { const details = await Promise.all(selected.map((assessmentId) => queries.assessment(assessmentId))); let added = 0; for (const assessment of details) { if (assessment.status === "PUBLISHED" || assessment.status === "CLOSED") { toast.error(`${assessment.title} cannot be modified because it is ${assessment.status.toLowerCase()}.`); continue; } if (assessment.items?.some((item) => item.problemId === problemId)) { toast.error(`This problem is already included in ${assessment.title}.`); continue; } await api.post(`/assessments/${assessment.id}/items`, { problemId, order: (assessment.items?.length ?? 0) + 1 }); added += 1; } if (added) { toast.success(`Problem added to ${added} assessment${added === 1 ? "" : "s"}`); router.push(`/recruiter/problems/${problemId}`); } } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Unable to add problem to assessments"); } finally { setPending(false); } }
+  const { id: problemId } = useParams<{ id: string }>();
+  const router = useRouter();
+  const params = useSearchParams();
+  const page = Number(params.get("page") ?? 1);
+  const [input, setInput] = useState(params.get("search") ?? "");
+  const search = useDebouncedValue(input);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [pending, setPending] = useState(false);
+  const problem = useQuery({
+    queryKey: ["problem", problemId],
+    queryFn: () => queries.problem(problemId),
+  });
+  const assessments = useQuery({
+    queryKey: ["problem-assessment-picker", page, search],
+    queryFn: () => queries.assessments(listParams(page, search)),
+  });
+  function updateSearch(value: string) {
+    setInput(value);
+    router.replace(
+      `/recruiter/problems/${problemId}/add${value ? `?search=${encodeURIComponent(value)}` : ""}`,
+      { scroll: false },
+    );
+  }
+  function toggle(assessmentId: string) {
+    setSelected((current) =>
+      current.includes(assessmentId)
+        ? current.filter((value) => value !== assessmentId)
+        : [...current, assessmentId],
+    );
+  }
+  async function addToSelected() {
+    if (!selected.length) {
+      toast.error("Select at least one assessment.");
+      return;
+    }
+    setPending(true);
+    try {
+      const details = await Promise.all(
+        selected.map((assessmentId) => queries.assessment(assessmentId)),
+      );
+      let added = 0;
+      for (const assessment of details) {
+        if (assessment.status === "PUBLISHED" || assessment.status === "CLOSED") {
+          toast.error(
+            `${assessment.title} cannot be modified because it is ${assessment.status.toLowerCase()}.`,
+          );
+          continue;
+        }
+        if (assessment.items?.some((item) => item.problemId === problemId)) {
+          toast.error(`This problem is already included in ${assessment.title}.`);
+          continue;
+        }
+        await api.post(`/assessments/${assessment.id}/items`, {
+          problemId,
+          order: (assessment.items?.length ?? 0) + 1,
+        });
+        added += 1;
+      }
+      if (added) {
+        toast.success(`Problem added to ${added} assessment${added === 1 ? "" : "s"}`);
+        router.push(`/recruiter/problems/${problemId}`);
+      }
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to add problem to assessments");
+    } finally {
+      setPending(false);
+    }
+  }
   if (problem.isLoading) return <Skeleton className="h-96" />;
-  return <div className="max-w-4xl"><PageIntro eyebrow="Problem bank" title={`Add ${problem.data?.title ?? "problem"} to assessments`} description="Select multiple editable assessments and add this problem to all of them." /><div className="mt-6 flex flex-wrap items-center gap-3"><Link href={`/recruiter/problems/${problemId}`}><Button type="button" variant="secondary"><ArrowLeft className="mr-2 size-4" />Back to problem</Button></Link><Badge>{selected.length} selected</Badge><Button type="button" className="ml-auto" disabled={pending || !selected.length} onClick={() => void addToSelected()}>{pending ? "Adding…" : "Add to selected assessments"}</Button></div><div className="relative mt-8"><Search className="absolute left-3 top-3 size-4 text-slate-500" /><input value={input} onChange={(event) => updateSearch(event.target.value)} placeholder="Search assessments…" className="w-full rounded-xl border border-white/10 bg-white/[.04] py-2.5 pl-10 pr-4 text-white" /></div><Card className="mt-5 p-0"><div className="divide-y divide-white/10">{assessments.isLoading ? [1, 2, 3].map((item) => <Skeleton key={item} className="m-5 h-20" />) : assessments.data?.items.length ? assessments.data.items.map((assessment: Assessment) => { const locked = assessment.status === "PUBLISHED" || assessment.status === "CLOSED"; const checked = selected.includes(assessment.id); return <label key={assessment.id} className={`flex items-start gap-4 p-5 ${locked ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-white/[.04]"}`}><input type="checkbox" checked={checked} disabled={locked} onChange={() => toggle(assessment.id)} className="mt-1 size-4 accent-cyan-400" /><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-2"><span className="font-semibold text-white">{assessment.title}</span><Badge tone={locked ? "danger" : assessment.status === "READY" ? "warning" : "neutral"}>{assessment.status}</Badge></span><span className="mt-1 block text-sm text-slate-400">{assessment.description}</span><span className="mt-2 block text-xs text-slate-500">{assessment.itemCount ?? 0} questions · {assessment.durationMinutes} minutes</span></span>{checked && <Check className="mt-1 size-5 text-cyan-300" />}</label>; }) : <div className="p-5"><EmptyState title="No assessments found" description="Create an assessment or change your search." /></div>}<PaginationControls page={assessments.data?.pagination.page ?? page} totalPages={assessments.data?.pagination.totalPages ?? 0} onPage={(next) => router.push(`/recruiter/problems/${problemId}/add?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`)} /></div></Card></div>;
+  return (
+    <div className="max-w-4xl">
+      <PageIntro
+        eyebrow="Problem bank"
+        title={`Add ${problem.data?.title ?? "problem"} to assessments`}
+        description="Select multiple editable assessments and add this problem to all of them."
+      />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <Link href={`/recruiter/problems/${problemId}`}>
+          <Button type="button" variant="secondary">
+            <ArrowLeft className="mr-2 size-4" />
+            Back to problem
+          </Button>
+        </Link>
+        <Badge>{selected.length} selected</Badge>
+        <Button
+          type="button"
+          className="ml-auto"
+          disabled={pending || !selected.length}
+          onClick={() => void addToSelected()}
+        >
+          {pending ? "Adding…" : "Add to selected assessments"}
+        </Button>
+      </div>
+      <div className="relative mt-8">
+        <Search className="absolute left-3 top-3 size-4 text-slate-500" />
+        <input
+          value={input}
+          onChange={(event) => updateSearch(event.target.value)}
+          placeholder="Search assessments…"
+          className="w-full rounded-xl border border-white/10 bg-white/[.04] py-2.5 pl-10 pr-4 text-white"
+        />
+      </div>
+      <Card className="mt-5 p-0">
+        <div className="divide-y divide-white/10">
+          {assessments.isLoading ? (
+            [1, 2, 3].map((item) => <Skeleton key={item} className="m-5 h-20" />)
+          ) : assessments.data?.items.length ? (
+            assessments.data.items.map((assessment: Assessment) => {
+              const locked = assessment.status === "PUBLISHED" || assessment.status === "CLOSED";
+              const checked = selected.includes(assessment.id);
+              return (
+                <label
+                  key={assessment.id}
+                  className={`flex items-start gap-4 p-5 ${locked ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-white/[.04]"}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={locked}
+                    onChange={() => toggle(assessment.id)}
+                    className="mt-1 size-4 accent-cyan-400"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-white">{assessment.title}</span>
+                      <Badge
+                        tone={
+                          locked ? "danger" : assessment.status === "READY" ? "warning" : "neutral"
+                        }
+                      >
+                        {assessment.status}
+                      </Badge>
+                    </span>
+                    <span className="mt-1 block text-sm text-slate-400">
+                      {assessment.description}
+                    </span>
+                    <span className="mt-2 block text-xs text-slate-500">
+                      {assessment.itemCount ?? 0} questions · {assessment.durationMinutes} minutes
+                    </span>
+                  </span>
+                  {checked && <Check className="mt-1 size-5 text-cyan-300" />}
+                </label>
+              );
+            })
+          ) : (
+            <div className="p-5">
+              <EmptyState
+                title="No assessments found"
+                description="Create an assessment or change your search."
+              />
+            </div>
+          )}
+          <PaginationControls
+            page={assessments.data?.pagination.page ?? page}
+            totalPages={assessments.data?.pagination.totalPages ?? 0}
+            onPage={(next) =>
+              router.push(
+                `/recruiter/problems/${problemId}/add?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+              )
+            }
+          />
+        </div>
+      </Card>
+    </div>
+  );
 }

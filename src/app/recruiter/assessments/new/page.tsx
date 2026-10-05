@@ -1,2 +1,4 @@
 import { AssessmentForm } from "@/components/author-forms";
-export default function NewAssessmentPage() { return <AssessmentForm />; }
+export default function NewAssessmentPage() {
+  return <AssessmentForm />;
+}

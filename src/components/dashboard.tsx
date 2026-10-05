@@ -1,19 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  ClipboardList,
-  CreditCard,
-  Users,
-  Zap,
-} from "lucide-react";
+import { ArrowUpRight, ClipboardList, CreditCard, Users, Zap } from "lucide-react";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
-import type {
-  Assessment,
-  Attempt,
-} from "@/lib/types";
+import type { Assessment, Attempt } from "@/lib/types";
 
 export function StatCard({
   label,
@@ -49,7 +40,9 @@ export function AdminOverview() {
     return (
       <EmptyState
         title="Dashboard unavailable"
-        description={error instanceof Error ? error.message : "Start the backend and check your admin session."}
+        description={
+          error instanceof Error ? error.message : "Start the backend and check your admin session."
+        }
       />
     );
   return (
@@ -90,15 +83,26 @@ export function AdminOverview() {
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {(["candidates", "recruiters", "admins"] as const).map((role) => (
             <div key={role} className="rounded-xl bg-white/[.04] p-4">
-              <p className="text-xs uppercase tracking-wider text-slate-500">
-                {role}
-              </p>
+              <p className="text-xs uppercase tracking-wider text-slate-500">{role}</p>
               <p className="mt-2 text-2xl font-black text-white">{data.users[role]}</p>
             </div>
           ))}
         </div>
       </Card>
-      <Card className="mt-6"><h2 className="font-bold text-white">Admin operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/admin/users"><Button variant="secondary">Manage users</Button></Link><Link href="/admin/applications"><Button variant="secondary">Review recruiter applications</Button></Link><Link href="/admin/audit-logs"><Button variant="secondary">View audit logs</Button></Link></div></Card>
+      <Card className="mt-6">
+        <h2 className="font-bold text-white">Admin operations</h2>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/admin/users">
+            <Button variant="secondary">Manage users</Button>
+          </Link>
+          <Link href="/admin/applications">
+            <Button variant="secondary">Review recruiter applications</Button>
+          </Link>
+          <Link href="/admin/audit-logs">
+            <Button variant="secondary">View audit logs</Button>
+          </Link>
+        </div>
+      </Card>
     </>
   );
 }
@@ -130,10 +134,7 @@ export function RecruiterOverview() {
         />
         <StatCard
           label="Published"
-          value={
-            data?.items.filter((a: Assessment) => a.status === "PUBLISHED")
-              .length ?? 0
-          }
+          value={data?.items.filter((a: Assessment) => a.status === "PUBLISHED").length ?? 0}
           detail="Live candidate experiences"
           icon={ArrowUpRight}
         />
@@ -153,15 +154,10 @@ export function RecruiterOverview() {
                 <div>
                   <p className="font-semibold text-white">{assessment.title}</p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {assessment.itemCount ?? 0} questions ·{" "}
-                    {assessment.durationMinutes} minutes
+                    {assessment.itemCount ?? 0} questions · {assessment.durationMinutes} minutes
                   </p>
                 </div>
-                <Badge
-                  tone={
-                    assessment.status === "PUBLISHED" ? "success" : "warning"
-                  }
-                >
+                <Badge tone={assessment.status === "PUBLISHED" ? "success" : "warning"}>
                   {assessment.status}
                 </Badge>
               </div>
@@ -174,7 +170,29 @@ export function RecruiterOverview() {
           )}
         </div>
       </Card>
-      <Card className="mt-6"><h2 className="font-bold text-white">Authoring operations</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/recruiter/problems/new"><Button>New problem</Button></Link><Link href="/recruiter/problems"><Button variant="secondary">Manage problem bank</Button></Link><Link href="/recruiter/assessments/new"><Button>New assessment</Button></Link><Link href="/recruiter/assessments"><Button variant="secondary">Manage assessments</Button></Link><Link href="/recruiter/submissions"><Button variant="secondary">Review submissions</Button></Link><Link href="/recruiter/profile"><Button variant="secondary">Edit company profile</Button></Link></div></Card>
+      <Card className="mt-6">
+        <h2 className="font-bold text-white">Authoring operations</h2>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/recruiter/problems/new">
+            <Button>New problem</Button>
+          </Link>
+          <Link href="/recruiter/problems">
+            <Button variant="secondary">Manage problem bank</Button>
+          </Link>
+          <Link href="/recruiter/assessments/new">
+            <Button>New assessment</Button>
+          </Link>
+          <Link href="/recruiter/assessments">
+            <Button variant="secondary">Manage assessments</Button>
+          </Link>
+          <Link href="/recruiter/submissions">
+            <Button variant="secondary">Review submissions</Button>
+          </Link>
+          <Link href="/recruiter/profile">
+            <Button variant="secondary">Edit company profile</Button>
+          </Link>
+        </div>
+      </Card>
     </>
   );
 }
@@ -201,19 +219,13 @@ export function CandidateOverview() {
         />
         <StatCard
           label="In progress"
-          value={
-            attempts.filter((a: Attempt) => a.status === "IN_PROGRESS")
-              .length ?? 0
-          }
+          value={attempts.filter((a: Attempt) => a.status === "IN_PROGRESS").length ?? 0}
           detail="Pick up where you left off"
           icon={Zap}
         />
         <StatCard
           label="Evaluated"
-          value={
-            attempts.filter((a: Attempt) => a.status === "EVALUATED")
-              .length ?? 0
-          }
+          value={attempts.filter((a: Attempt) => a.status === "EVALUATED").length ?? 0}
           detail="Results ready to review"
           icon={ArrowUpRight}
         />
@@ -235,17 +247,15 @@ export function CandidateOverview() {
                     {attempt.status === "EVALUATED"
                       ? `${attempt.totalScore ?? 0}/${attempt.maxScore ?? "—"} points · evaluation complete`
                       : attempt.status === "SUBMITTED"
-                      ? "Submitted · awaiting written evaluation"
-                      : attempt.status === "CANCELLED"
-                      ? "Attempt cancelled"
-                      : attempt.status === "IN_PROGRESS"
-                      ? "Attempt in progress"
-                      : "Ready to start"}
+                        ? "Submitted · awaiting written evaluation"
+                        : attempt.status === "CANCELLED"
+                          ? "Attempt cancelled"
+                          : attempt.status === "IN_PROGRESS"
+                            ? "Attempt in progress"
+                            : "Ready to start"}
                   </p>
                 </div>
-                <Badge
-                  tone={attempt.status === "EVALUATED" ? "success" : "warning"}
-                >
+                <Badge tone={attempt.status === "EVALUATED" ? "success" : "warning"}>
                   {attempt.status.replace("_", " ")}
                 </Badge>
               </div>
@@ -258,7 +268,20 @@ export function CandidateOverview() {
           )}
         </div>
       </Card>
-      <Card className="mt-6"><h2 className="font-bold text-white">Candidate actions</h2><div className="mt-4 flex flex-wrap gap-3"><Link href="/dashboard/invitations"><Button>View invitations</Button></Link><Link href="/dashboard/profile"><Button variant="secondary">Update profile</Button></Link><Link href="/dashboard/payments"><Button variant="secondary">View results</Button></Link></div></Card>
+      <Card className="mt-6">
+        <h2 className="font-bold text-white">Candidate actions</h2>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/dashboard/invitations">
+            <Button>View invitations</Button>
+          </Link>
+          <Link href="/dashboard/profile">
+            <Button variant="secondary">Update profile</Button>
+          </Link>
+          <Link href="/dashboard/payments">
+            <Button variant="secondary">View results</Button>
+          </Link>
+        </div>
+      </Card>
     </>
   );
 }
@@ -273,12 +296,8 @@ export function PageIntro({
 }) {
   return (
     <div>
-      <p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-300">
-        {eyebrow}
-      </p>
-      <h1 className="mt-3 text-4xl font-black tracking-tight text-white">
-        {title}
-      </h1>
+      <p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-300">{eyebrow}</p>
+      <h1 className="mt-3 text-4xl font-black tracking-tight text-white">{title}</h1>
       <p className="mt-3 max-w-2xl text-slate-400">{description}</p>
     </div>
   );

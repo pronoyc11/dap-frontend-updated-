@@ -34,10 +34,60 @@ export default function ResetPasswordPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#07111f] p-6">
       <Card className="w-full max-w-md">
-        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-cyan-400 text-xl font-black text-slate-950">A</div>
+        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-cyan-400 text-xl font-black text-slate-950">
+          A
+        </div>
         <h1 className="mt-6 text-3xl font-black text-white">Set a new password</h1>
-        {complete ? <><p className="mt-2 text-slate-400">Your password has been changed. You can now sign in with the new password.</p><Link className="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-4 py-3 font-bold text-slate-950" href="/login">Go to sign in</Link></> : <form className="mt-8 space-y-5" onSubmit={submit}><label className="block text-sm font-semibold text-slate-200">New password<input required minLength={8} type="password" autoComplete="new-password" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" value={password} onChange={(event) => setPassword(event.target.value)} /></label><label className="block text-sm font-semibold text-slate-200">Confirm password<input required minLength={8} type="password" autoComplete="new-password" className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} /></label><Button className="w-full" disabled={pending || !token}>{pending ? "Updating…" : "Reset password"}</Button></form>}
-        {!complete && <p className="mt-6 text-center text-sm text-slate-400"><Link className="font-semibold text-cyan-300 hover:text-cyan-200" href="/login">Back to sign in</Link></p>}
+        {complete ? (
+          <>
+            <p className="mt-2 text-slate-400">
+              Your password has been changed. You can now sign in with the new password.
+            </p>
+            <Link
+              className="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-cyan-400 px-4 py-3 font-bold text-slate-950"
+              href="/login"
+            >
+              Go to sign in
+            </Link>
+          </>
+        ) : (
+          <form className="mt-8 space-y-5" onSubmit={submit}>
+            <label className="block text-sm font-semibold text-slate-200">
+              New password
+              <input
+                required
+                minLength={8}
+                type="password"
+                autoComplete="new-password"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
+            <label className="block text-sm font-semibold text-slate-200">
+              Confirm password
+              <input
+                required
+                minLength={8}
+                type="password"
+                autoComplete="new-password"
+                className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-white"
+                value={confirmation}
+                onChange={(event) => setConfirmation(event.target.value)}
+              />
+            </label>
+            <Button className="w-full" disabled={pending || !token}>
+              {pending ? "Updating…" : "Reset password"}
+            </Button>
+          </form>
+        )}
+        {!complete && (
+          <p className="mt-6 text-center text-sm text-slate-400">
+            <Link className="font-semibold text-cyan-300 hover:text-cyan-200" href="/login">
+              Back to sign in
+            </Link>
+          </p>
+        )}
       </Card>
     </main>
   );

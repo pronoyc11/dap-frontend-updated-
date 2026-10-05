@@ -6,4 +6,71 @@ import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
 import { queries } from "@/lib/queries";
 import { PageIntro } from "@/components/dashboard";
 
-export default function AuditLogDetails() { const { id } = useParams<{ id: string }>(); const router = useRouter(); const { data, isLoading } = useQuery({ queryKey: ["audit-log", id], queryFn: () => queries.auditLog(id) }); if (isLoading) return <Skeleton className="h-96" />; if (!data) return <EmptyState title="Audit log not found" description="This audit record is unavailable." />; return <div className="max-w-3xl"><PageIntro eyebrow="Platform control" title="Audit event details" description="Read-only information recorded for this platform action." /><Card className="mt-8"><div className="flex flex-wrap items-center gap-3"><Badge>{String(data.action ?? "Activity")}</Badge><Badge>{String(data.entity ?? "Unknown entity")}</Badge></div><dl className="mt-8 space-y-5 text-sm"><div><dt className="text-slate-500">Event ID</dt><dd className="mt-1 break-all text-slate-200">{String(data.id ?? id)}</dd></div><div><dt className="text-slate-500">Actor ID</dt><dd className="mt-1 break-all text-slate-200">{String(data.actorId ?? "—")}</dd></div><div><dt className="text-slate-500">Entity ID</dt><dd className="mt-1 break-all text-slate-200">{String(data.entityId ?? "—")}</dd></div><div><dt className="text-slate-500">Created</dt><dd className="mt-1 text-slate-200">{String(data.createdAt ?? "—")}</dd></div><div><dt className="text-slate-500">IP address</dt><dd className="mt-1 text-slate-200">{String(data.ipAddress ?? "—")}</dd></div><div><dt className="text-slate-500">User agent</dt><dd className="mt-1 break-words text-slate-200">{String(data.userAgent ?? "—")}</dd></div><div><dt className="text-slate-500">Metadata</dt><dd className="mt-1 whitespace-pre-wrap rounded-xl bg-black/20 p-4 text-slate-200">{JSON.stringify(data.metadata ?? {}, null, 2)}</dd></div></dl><Button className="mt-8" type="button" variant="secondary" onClick={() => router.push("/admin/audit-logs")}>Back to audit logs</Button></Card></div>; }
+export default function AuditLogDetails() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { data, isLoading } = useQuery({
+    queryKey: ["audit-log", id],
+    queryFn: () => queries.auditLog(id),
+  });
+  if (isLoading) return <Skeleton className="h-96" />;
+  if (!data)
+    return (
+      <EmptyState title="Audit log not found" description="This audit record is unavailable." />
+    );
+  return (
+    <div className="max-w-3xl">
+      <PageIntro
+        eyebrow="Platform control"
+        title="Audit event details"
+        description="Read-only information recorded for this platform action."
+      />
+      <Card className="mt-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge>{String(data.action ?? "Activity")}</Badge>
+          <Badge>{String(data.entity ?? "Unknown entity")}</Badge>
+        </div>
+        <dl className="mt-8 space-y-5 text-sm">
+          <div>
+            <dt className="text-slate-500">Event ID</dt>
+            <dd className="mt-1 break-all text-slate-200">{String(data.id ?? id)}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Actor ID</dt>
+            <dd className="mt-1 break-all text-slate-200">{String(data.actorId ?? "—")}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Entity ID</dt>
+            <dd className="mt-1 break-all text-slate-200">{String(data.entityId ?? "—")}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Created</dt>
+            <dd className="mt-1 text-slate-200">{String(data.createdAt ?? "—")}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">IP address</dt>
+            <dd className="mt-1 text-slate-200">{String(data.ipAddress ?? "—")}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">User agent</dt>
+            <dd className="mt-1 break-words text-slate-200">{String(data.userAgent ?? "—")}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-500">Metadata</dt>
+            <dd className="mt-1 whitespace-pre-wrap rounded-xl bg-black/20 p-4 text-slate-200">
+              {JSON.stringify(data.metadata ?? {}, null, 2)}
+            </dd>
+          </div>
+        </dl>
+        <Button
+          className="mt-8"
+          type="button"
+          variant="secondary"
+          onClick={() => router.push("/admin/audit-logs")}
+        >
+          Back to audit logs
+        </Button>
+      </Card>
+    </div>
+  );
+}
