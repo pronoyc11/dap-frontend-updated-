@@ -73,6 +73,10 @@ export default function Login() {
   return (
     <main className="flex min-h-screen items-start justify-center overflow-x-hidden bg-[#07111f] px-4 py-8 sm:items-center sm:px-6 sm:py-12">
       <div className="w-full max-w-5xl min-w-0">
+        <header className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 font-black tracking-tight text-white"><span className="grid size-8 place-items-center rounded-lg bg-cyan-400 text-sm text-slate-950">A</span>atlas<span className="text-cyan-300">/</span>DAP</Link>
+          <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm text-slate-400 sm:gap-5"><Link className="hover:text-cyan-300" href="/about">Platform</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/services">Solutions</Link><Link className="hidden hover:text-cyan-300 sm:inline" href="/pricing">Pricing</Link><Link className="hover:text-cyan-300" href="/contact">Contact</Link><Link className="font-semibold text-cyan-300" href="/register">Register</Link></nav>
+        </header>
         <div className="mb-7 text-center sm:mb-8">
           <div className="mx-auto grid size-11 place-items-center rounded-2xl bg-cyan-400 text-xl font-black text-slate-950 sm:size-12">A</div>
           <h1 className="mt-4 text-3xl font-black text-white sm:mt-5 sm:text-4xl">Welcome back</h1>
