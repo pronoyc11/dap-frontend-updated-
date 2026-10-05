@@ -23,6 +23,7 @@ import { useAuthStore } from "@/store/auth";
 import type { Role } from "@/lib/types";
 import { ThemeToggle } from "./theme-toggle";
 import { toast } from "sonner";
+import { clearSessionHint } from "@/lib/session";
 
 const nav: Record<
   Role,
@@ -97,8 +98,10 @@ export function AppShell({
   async function logout() {
     await api.post("/auth/logout").catch(() => undefined);
     toast.success("Signed out successfully");
+    clearSessionHint();
     setUser(null);
-    router.push("/login");
+    router.replace("/login");
+    router.refresh();
   }
   return (
     <div className="min-h-screen bg-[#07111f]">
