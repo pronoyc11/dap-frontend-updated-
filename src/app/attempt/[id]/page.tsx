@@ -17,7 +17,7 @@ export default function AttemptPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [remaining, setRemaining] = useState<number | null>(null);
+  const [clock, setClock] = useState(() => Date.now());
   const [pending, setPending] = useState(false);
   const completed = useRef(false);
   const hydrated = useRef(false);
@@ -29,7 +29,6 @@ export default function AttemptPage() {
     refetchInterval: 30_000,
   });
   // The query response is the external source of truth used to hydrate the form once.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (!data) return;
     if (!hydrated.current) {
@@ -39,12 +38,14 @@ export default function AttemptPage() {
       setAnswers(restored);
       hydrated.current = true;
     }
-    setRemaining(
-      data.deadline
-        ? Math.max(0, Math.ceil((new Date(data.deadline).getTime() - Date.now()) / 1000))
-        : (data.remainingTimeSeconds ?? null),
-    );
   }, [data]);
+  useEffect(() => {
+    const timer = window.setInterval(() => setClock(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const remaining = data?.deadline
+    ? Math.max(0, Math.ceil((new Date(data.deadline).getTime() - clock) / 1000))
+    : (data?.remainingTimeSeconds ?? null);
   const cancelInBackground = () => {
     if (completed.current) return;
     const body = JSON.stringify({
@@ -69,14 +70,6 @@ export default function AttemptPage() {
       window.removeEventListener("beforeunload", leave);
     };
   }, [id]);
-  useEffect(() => {
-    if (remaining === null || remaining <= 0) return;
-    const timer = window.setInterval(
-      () => setRemaining((value) => (value === null ? value : Math.max(0, value - 1))),
-      1000,
-    );
-    return () => window.clearInterval(timer);
-  }, [remaining]);
   useEffect(() => {
     if (remaining !== 0 || !data || pending || completed.current) return;
     toast.info("Time is up. Submitting your assessment.");
