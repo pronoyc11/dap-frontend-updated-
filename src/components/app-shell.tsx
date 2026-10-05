@@ -24,6 +24,7 @@ import type { Role } from "@/lib/types";
 import { ThemeToggle } from "./theme-toggle";
 import { toast } from "sonner";
 import { clearSessionHint } from "@/lib/session";
+import { useQueryClient } from "@tanstack/react-query";
 
 const nav: Record<
   Role,
@@ -69,6 +70,7 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const { user, setUser } = useAuthStore();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!user)
@@ -96,10 +98,11 @@ export function AppShell({
       );
   }, [user, role, setUser, router]);
   async function logout() {
+    setUser(null);
+    queryClient.clear();
+    clearSessionHint();
     await api.post("/auth/logout").catch(() => undefined);
     toast.success("Signed out successfully");
-    clearSessionHint();
-    setUser(null);
     router.replace("/login");
     router.refresh();
   }
