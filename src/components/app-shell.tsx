@@ -108,8 +108,9 @@ export function AppShell({
   }
   return (
     <div className="min-h-screen bg-[#07111f]">
+      {open && <button aria-label="Close navigation" className="fixed inset-0 z-20 bg-slate-950/60 lg:hidden" onClick={() => setOpen(false)} />}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-72 border-r border-white/10 bg-[#0a1728] p-5 transition-transform lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-[min(18rem,calc(100vw-2rem))] overflow-y-auto border-r border-white/10 bg-[#0a1728] p-5 pb-28 transition-transform lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -163,7 +164,7 @@ export function AppShell({
         </div>
       </aside>
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-white/10 bg-[#07111f]/80 px-5 backdrop-blur lg:px-10">
+        <header className="sticky top-0 z-20 flex min-w-0 h-16 items-center justify-between border-b border-white/10 bg-[#07111f]/80 px-4 backdrop-blur sm:px-5 lg:px-10">
           <button className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu />
           </button>
@@ -179,7 +180,7 @@ export function AppShell({
             <span className="size-2 rounded-full bg-emerald-400" />
           </div>
         </header>
-        <main className="mx-auto max-w-7xl p-5 lg:p-10">{children}</main>
+        <main className="mx-auto min-w-0 max-w-7xl p-4 sm:p-5 lg:p-10">{children}</main>
       </div>
     </div>
   );
