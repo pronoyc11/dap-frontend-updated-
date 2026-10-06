@@ -10,7 +10,6 @@ import { ThemeToggle } from "./theme-toggle";
 import { api } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { clearSessionHint } from "@/lib/session";
-import type { Role } from "@/lib/types";
 import { toast } from "sonner";
 
 const links = [
@@ -20,7 +19,7 @@ const links = [
   ["/contact", "Contact"],
 ] as const;
 
-export function MarketingNav({ initialRole }: { initialRole: Role | null }) {
+export function MarketingNav() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -29,7 +28,9 @@ export function MarketingNav({ initialRole }: { initialRole: Role | null }) {
     isLoading,
     isError,
   } = useQuery({ queryKey: ["auth", "me"], queryFn: queries.me, retry: false });
-  const role = user?.role ?? (isLoading ? initialRole : null);
+  // Do not use the session hint while the live auth request is unresolved.
+  // A stale cookie must never briefly render authenticated navigation.
+  const role = !isLoading && !isError ? (user?.role ?? null) : null;
   const dashboard =
     role === "ADMIN" ? "/admin" : role === "RECRUITER" ? "/recruiter" : "/dashboard";
 
