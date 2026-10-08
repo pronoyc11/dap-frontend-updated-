@@ -13,6 +13,34 @@ export interface User {
   createdAt?: string;
 }
 
+export interface InvitedCandidateInvitation {
+  id: string;
+  status: "PENDING" | "ACCEPTED" | "USED";
+  createdAt?: string;
+  acceptedAt?: string | null;
+  expiresAt?: string | null;
+  assessment: {
+    id: string;
+    title: string;
+    passingScore: number;
+    durationMinutes: number;
+  };
+  attempt: {
+    id: string;
+    status: Attempt["status"];
+    startedAt?: string | null;
+    submittedAt?: string | null;
+    evaluatedAt?: string | null;
+    totalScore: number;
+    maxScore: number;
+    passed: boolean;
+  } | null;
+}
+
+export interface InvitedCandidate extends User {
+  invitations: InvitedCandidateInvitation[];
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;

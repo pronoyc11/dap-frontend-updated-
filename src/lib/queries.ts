@@ -1,4 +1,13 @@
-import type { Assessment, Attempt, Dashboard, Paginated, Pagination, Problem, User } from "./types";
+import type {
+  Assessment,
+  Attempt,
+  Dashboard,
+  InvitedCandidate,
+  Paginated,
+  Pagination,
+  Problem,
+  User,
+} from "./types";
 import { api } from "./api";
 
 export const queries = {
@@ -36,6 +45,9 @@ export const queries = {
     listQuery<Record<string, unknown>>(`/assessments/${id}/candidates${params}`, "candidates"),
   candidates: (params = "") => listQuery<User>(`/users/candidates${params}`, "candidates"),
   candidate: (id: string) => api.get<User>(`/users/candidates/${id}`),
+  invitedCandidates: (params = "") =>
+    listQuery<User>(`/users/invited-candidates${params}`, "candidates"),
+  invitedCandidate: (id: string) => api.get<InvitedCandidate>(`/users/invited-candidates/${id}`),
 };
 
 async function listQuery<T>(path: string, key: string): Promise<Paginated<T>> {

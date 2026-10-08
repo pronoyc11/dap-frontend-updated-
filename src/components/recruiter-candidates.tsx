@@ -13,9 +13,9 @@ export function RecruiterCandidates() {
   const search = searchParams.get("search") ?? "";
   const page = Number(searchParams.get("page") ?? 1);
   const { data, isLoading } = useQuery({
-    queryKey: ["candidates", page, search],
+    queryKey: ["invited-candidates", page, search],
     queryFn: () =>
-      queries.candidates(
+      queries.invitedCandidates(
         `?page=${page}&limit=15${search ? `&search=${encodeURIComponent(search)}` : ""}`,
       ),
   });
@@ -23,8 +23,8 @@ export function RecruiterCandidates() {
     <>
       <PageIntro
         eyebrow="Recruiter workspace"
-        title="Candidate directory"
-        description="Find active verified candidates and inspect their public profile before sending an invitation."
+        title="Invited candidates"
+        description="Review candidates you have invited and inspect their assessment progress."
       />
       <form
         className="mt-8"
@@ -69,7 +69,10 @@ export function RecruiterCandidates() {
             ))
           ) : (
             <div className="p-5">
-              <EmptyState title="No candidates found" description="Try a different search." />
+              <EmptyState
+                title="No invited candidates found"
+                description="Try a different search."
+              />
             </div>
           )}
           <PaginationControls
