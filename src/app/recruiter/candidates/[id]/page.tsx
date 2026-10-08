@@ -10,8 +10,8 @@ export default function CandidateDetails() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { data, isLoading } = useQuery({
-    queryKey: ["invited-candidate", id],
-    queryFn: () => queries.invitedCandidate(id),
+    queryKey: ["candidate", id],
+    queryFn: () => queries.candidate(id),
   });
   if (isLoading) return <Skeleton className="h-80" />;
   if (!data)
@@ -26,7 +26,7 @@ export default function CandidateDetails() {
       <PageIntro
         eyebrow="Recruiter workspace"
         title={data.name}
-        description="Review every invitation and the candidate's progress across your assessments."
+        description="Candidate profile details available for invitation workflows."
       />
       <Card className="mt-8">
         <div className="flex items-center gap-4">
@@ -43,7 +43,7 @@ export default function CandidateDetails() {
           )}
           <div>
             <p className="font-bold text-white">{data.email}</p>
-            <Badge tone="success">INVITED CANDIDATE</Badge>
+            <Badge tone="success">ACTIVE CANDIDATE</Badge>
           </div>
         </div>
         <dl className="mt-8 space-y-4 text-sm">
@@ -56,62 +56,6 @@ export default function CandidateDetails() {
             <dd className="mt-1 text-slate-200">{String(data.createdAt ?? "—")}</dd>
           </div>
         </dl>
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold text-white">Assessment activity</h2>
-          {data.invitations.length ? (
-            <div className="mt-4 space-y-3">
-              {data.invitations.map((invitation) => (
-                <div
-                  key={invitation.id}
-                  className="rounded-xl border border-white/10 bg-white/[.03] p-4"
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="font-semibold text-white">{invitation.assessment.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        Invited {formatDate(invitation.createdAt)}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge tone={invitation.status === "PENDING" ? "warning" : "success"}>
-                        {invitation.status === "PENDING" ? "NOT ACCEPTED" : "ACCEPTED"}
-                      </Badge>
-                      <Badge tone={invitation.attempt ? "success" : "neutral"}>
-                        {getAttemptLabel(invitation.attempt?.status)}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                    <div>
-                      <p className="text-slate-500">Attempt result</p>
-                      <p className="mt-1 text-slate-200">
-                        {invitation.attempt?.status === "EVALUATED"
-                          ? invitation.attempt.passed
-                            ? "Passed"
-                            : "Failed"
-                          : "Awaiting evaluation"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Score</p>
-                      <p className="mt-1 text-slate-200">
-                        {invitation.attempt?.status === "EVALUATED"
-                          ? `${invitation.attempt.totalScore}/${invitation.attempt.maxScore}`
-                          : "—"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500">Accepted</p>
-                      <p className="mt-1 text-slate-200">{formatDate(invitation.acceptedAt)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-slate-500">No assessment invitations found.</p>
-          )}
-        </div>
         <div className="mt-8 flex gap-3">
           <Button type="button" onClick={() => router.push(`/recruiter/candidates/${id}/invite`)}>
             Invite candidate
@@ -127,13 +71,4 @@ export default function CandidateDetails() {
       </Card>
     </div>
   );
-}
-
-function formatDate(value?: string | null) {
-  return value ? new Date(value).toLocaleString() : "—";
-}
-
-function getAttemptLabel(status?: string) {
-  if (!status) return "NOT ATTEMPTED";
-  return status.replaceAll("_", " ");
 }

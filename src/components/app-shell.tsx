@@ -44,6 +44,7 @@ const nav: Record<Role, { href: string; label: string; icon: typeof LayoutDashbo
     },
     { href: "/recruiter/submissions", label: "Submissions", icon: BarChart3 },
     { href: "/recruiter/candidates", label: "Candidates", icon: Users },
+    { href: "/recruiter/invited-candidates", label: "Invited candidates", icon: Users },
     { href: "/recruiter/profile", label: "Company profile", icon: Settings },
   ],
   CANDIDATE: [

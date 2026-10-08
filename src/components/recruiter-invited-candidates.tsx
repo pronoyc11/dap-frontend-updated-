@@ -7,39 +7,43 @@ import { queries } from "@/lib/queries";
 import { Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
 import { PageIntro } from "@/components/dashboard";
 
-export function RecruiterCandidates() {
+export function RecruiterInvitedCandidates() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const search = searchParams.get("search") ?? "";
   const page = Number(searchParams.get("page") ?? 1);
   const { data, isLoading } = useQuery({
-    queryKey: ["candidates", page, search],
+    queryKey: ["invited-candidates", page, search],
     queryFn: () =>
-      queries.candidates(
+      queries.invitedCandidates(
         `?page=${page}&limit=15${search ? `&search=${encodeURIComponent(search)}` : ""}`,
       ),
   });
+
+  function updateSearch(value: string) {
+    router.push(
+      `/recruiter/invited-candidates?${value ? `search=${encodeURIComponent(value)}` : ""}`,
+    );
+  }
+
   return (
     <>
       <PageIntro
         eyebrow="Recruiter workspace"
-        title="Candidate directory"
-        description="Find active verified candidates and inspect their public profile before sending an invitation."
+        title="Invited candidates"
+        description="Review candidates you have invited and inspect their assessment progress."
       />
       <form
         className="mt-8"
         onSubmit={(event) => {
           event.preventDefault();
-          const value = new FormData(event.currentTarget).get("search")?.toString() ?? "";
-          router.push(
-            `/recruiter/candidates?${value ? `search=${encodeURIComponent(value)}` : ""}`,
-          );
+          updateSearch(new FormData(event.currentTarget).get("search")?.toString() ?? "");
         }}
       >
         <input
           name="search"
           defaultValue={search}
-          placeholder="Search candidates by name or email…"
+          placeholder="Search invited candidates by name or email…"
           className="w-full rounded-xl border border-white/10 bg-white/[.04] px-4 py-3 text-white"
         />
       </form>
@@ -51,7 +55,7 @@ export function RecruiterCandidates() {
             data.items.map((candidate) => (
               <Link
                 key={candidate.id}
-                href={`/recruiter/candidates/${candidate.id}`}
+                href={`/recruiter/invited-candidates/${candidate.id}`}
                 className="flex items-center gap-4 p-5 hover:bg-white/[.04]"
               >
                 <span className="grid size-11 place-items-center overflow-hidden rounded-full bg-cyan-400/10 text-cyan-300">
@@ -69,7 +73,10 @@ export function RecruiterCandidates() {
             ))
           ) : (
             <div className="p-5">
-              <EmptyState title="No candidates found" description="Try a different search." />
+              <EmptyState
+                title="No invited candidates found"
+                description="Try a different search."
+              />
             </div>
           )}
           <PaginationControls
@@ -77,7 +84,7 @@ export function RecruiterCandidates() {
             totalPages={data?.pagination.totalPages ?? 0}
             onPage={(next) =>
               router.push(
-                `/recruiter/candidates?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
+                `/recruiter/invited-candidates?page=${next}${search ? `&search=${encodeURIComponent(search)}` : ""}`,
               )
             }
           />
