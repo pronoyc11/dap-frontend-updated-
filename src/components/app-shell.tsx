@@ -65,10 +65,13 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (!user)
+    let cancelled = false;
+
+    if (!user) {
       queries
         .me()
         .then((profile) => {
+          if (cancelled) return;
           setUser(profile);
           if (profile.role !== role)
             router.replace(
@@ -79,11 +82,18 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
                   : "/dashboard",
             );
         })
-        .catch(() => router.push("/login"));
-    else if (user.role !== role)
+        .catch(() => {
+          if (!cancelled) router.push("/login");
+        });
+    } else if (user.role !== role) {
       router.replace(
         user.role === "ADMIN" ? "/admin" : user.role === "RECRUITER" ? "/recruiter" : "/dashboard",
       );
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, role, setUser, router]);
   async function logout() {
     setUser(null);

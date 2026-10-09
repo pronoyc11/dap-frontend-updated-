@@ -5,7 +5,7 @@ import { LoaderCircle } from "lucide-react";
 import Script from "next/script";
 import { api } from "@/lib/api";
 import { markSession } from "@/lib/session";
-import type { Role } from "@/lib/types";
+import type { User } from "@/lib/types";
 
 declare global {
   interface Window {
@@ -31,7 +31,7 @@ declare global {
 const googleScript = "https://accounts.google.com/gsi/client";
 
 type GoogleLoginProps = {
-  onSuccess: (role: Role) => void;
+  onSuccess: (user: User) => void;
   onError: (message: string) => void;
 };
 
@@ -59,10 +59,10 @@ export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
     const signIn = (credential: string) => {
       setPending(true);
       void api
-        .post<{ user: { role: Role } }>("/auth/google", { credential })
+        .post<{ user: User }>("/auth/google", { credential })
         .then((result) => {
           markSession(result.user.role);
-          successRef.current(result.user.role);
+          successRef.current(result.user);
         })
         .catch((error: unknown) =>
           errorRef.current(error instanceof Error ? error.message : "Google sign-in failed"),

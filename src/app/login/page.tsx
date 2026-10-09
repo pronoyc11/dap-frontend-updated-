@@ -183,9 +183,10 @@ export default function Login() {
               <GoogleLogin
                 onSuccess={(role) => {
                   queryClient.clear();
-                  markSession(role as import("@/lib/types").Role);
+                  setUser(role);
+                  markSession(role.role);
                   toast.success("Signed in with Google");
-                  router.push(destination(role));
+                  router.push(destination(role.role));
                 }}
                 onError={(message) => {
                   setError(message);

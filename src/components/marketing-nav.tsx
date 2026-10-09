@@ -11,6 +11,7 @@ import { api } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { clearSessionHint } from "@/lib/session";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/auth";
 
 const links = [
   ["/about", "Platform"],
@@ -22,6 +23,7 @@ const links = [
 export function MarketingNav() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
   const [open, setOpen] = useState(false);
   const {
     data: user,
@@ -35,10 +37,11 @@ export function MarketingNav() {
     role === "ADMIN" ? "/admin" : role === "RECRUITER" ? "/recruiter" : "/dashboard";
 
   async function logout() {
+    setUser(null);
+    queryClient.clear();
     await api.post("/auth/logout").catch(() => undefined);
     clearSessionHint();
     toast.success("Signed out successfully");
-    queryClient.removeQueries({ queryKey: ["auth"] });
     setOpen(false);
     router.refresh();
   }
