@@ -20,11 +20,14 @@ declare global {
         };
       };
     };
+    __atlasGoogleAuth?: {
+      clientId: string;
+      onCredential: (credential: string) => void;
+    };
   }
 }
 
 const googleScript = "https://accounts.google.com/gsi/client";
-let initializedClientId: string | null = null;
 
 type GoogleLoginProps = {
   onSuccess: (role: Role) => void;
@@ -67,12 +70,13 @@ export function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
     const render = () => {
       if (cancelled || !window.google || !target.current) return;
 
-      if (initializedClientId !== clientId) {
+      const existingAuth = window.__atlasGoogleAuth;
+      window.__atlasGoogleAuth = { clientId, onCredential: signIn };
+      if (!existingAuth || existingAuth.clientId !== clientId) {
         window.google.accounts.id.initialize({
           client_id: clientId,
-          callback: (response) => signIn(response.credential),
+          callback: (response) => window.__atlasGoogleAuth?.onCredential(response.credential),
         });
-        initializedClientId = clientId;
       }
 
       target.current.replaceChildren();
