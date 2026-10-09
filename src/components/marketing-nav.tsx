@@ -50,8 +50,8 @@ export function MarketingNav() {
   return (
     <>
       {open && (
-          <button
-            type="button"
+        <button
+          type="button"
           aria-label="Close navigation"
           className="fixed inset-0 z-30 bg-slate-950/60 md:hidden"
           onClick={closeMenu}
