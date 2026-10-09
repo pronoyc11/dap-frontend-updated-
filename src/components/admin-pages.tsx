@@ -10,6 +10,7 @@ import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
 import { PageIntro } from "./dashboard";
 import type { User } from "@/lib/types";
+import { useAuthStore } from "@/store/auth";
 
 function params(values: Record<string, string | number>) {
   return `?${new URLSearchParams(
@@ -20,6 +21,7 @@ export function AdminUsers() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const currentUserId = useAuthStore((state) => state.user?.id);
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
   const search = searchParams.get("search") ?? "";
   const page = Number(searchParams.get("page") ?? 1);
@@ -85,7 +87,9 @@ export function AdminUsers() {
                   <Badge tone={user.status === "ACTIVE" ? "success" : "danger"}>
                     {user.status}
                   </Badge>
-                  {user.status === "ACTIVE" ? (
+                  {user.id === currentUserId ? (
+                    <Badge>Current account</Badge>
+                  ) : user.status === "ACTIVE" ? (
                     <Button
                       type="button"
                       variant="danger"

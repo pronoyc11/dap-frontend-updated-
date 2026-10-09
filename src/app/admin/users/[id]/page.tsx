@@ -9,11 +9,13 @@ import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
 import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "@/components/dashboard";
+import { useAuthStore } from "@/store/auth";
 
 export default function AdminUserDetails() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const currentUserId = useAuthStore((state) => state.user?.id);
   const [pending, setPending] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-user", id],
@@ -90,7 +92,9 @@ export default function AdminUserDetails() {
           <Button type="button" variant="secondary" onClick={() => router.push("/admin/users")}>
             Back
           </Button>
-          {data.status === "ACTIVE" ? (
+          {data.id === currentUserId ? (
+            <Badge>Current account</Badge>
+          ) : data.status === "ACTIVE" ? (
             <Button
               type="button"
               variant="danger"
