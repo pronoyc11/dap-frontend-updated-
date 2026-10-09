@@ -111,6 +111,14 @@ function SubmissionRow({
   async function evaluate() {
     const numericScore = Number(score);
     const points = Number(item.points ?? 0);
+    if (!score.trim()) {
+      toast.error("Enter a score before submitting feedback.");
+      return;
+    }
+    if (!feedback.trim()) {
+      toast.error("Enter feedback before evaluating this submission.");
+      return;
+    }
     if (!Number.isInteger(numericScore) || numericScore < 0 || numericScore > points) {
       toast.error(`Enter a score from 0 to ${points}.`);
       return;
@@ -160,6 +168,7 @@ function SubmissionRow({
             type="number"
             min={0}
             max={Number(item.points ?? 0)}
+            required
             value={score}
             onChange={(event) => setScore(event.target.value)}
             placeholder="Score"
@@ -168,10 +177,15 @@ function SubmissionRow({
           <input
             value={feedback}
             onChange={(event) => setFeedback(event.target.value)}
-            placeholder="Feedback (optional)"
+            required
+            placeholder="Feedback"
             className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white"
           />
-          <Button type="button" disabled={pending} onClick={() => void evaluate()}>
+          <Button
+            type="button"
+            disabled={pending || !score.trim() || !feedback.trim()}
+            onClick={() => void evaluate()}
+          >
             Evaluate
           </Button>
         </div>
