@@ -115,7 +115,7 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
             </span>
             atlas<span className="text-cyan-300">/</span>DAP
           </Link>
-          <button className="lg:hidden" onClick={() => setOpen(false)}>
+          <button type="button" className="lg:hidden" onClick={() => setOpen(false)}>
             <X />
           </button>
         </div>
@@ -147,6 +147,7 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
             </div>
           </div>
           <button
+            type="button"
             onClick={logout}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-slate-400 hover:bg-white/5 hover:text-white"
           >
@@ -157,7 +158,7 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
       </aside>
       <div className="lg:pl-72">
         <header className="sticky top-0 z-20 flex min-w-0 h-16 items-center justify-between border-b border-white/10 bg-[#07111f]/80 px-4 backdrop-blur sm:px-5 lg:px-10">
-          <button className="lg:hidden" onClick={() => setOpen(true)}>
+          <button type="button" className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu />
           </button>
           <div className="ml-auto flex items-center gap-3 text-sm text-slate-400">

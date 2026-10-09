@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
+import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "@/components/dashboard";
 
 export default function AdminUserDetails() {
@@ -46,9 +47,10 @@ export default function AdminUserDetails() {
       <Card className="mt-8">
         <div className="flex items-center gap-4">
           {data.avatarUrl ? (
-            <img
+            <AvatarImage
               src={data.avatarUrl}
               alt="User avatar"
+              size={64}
               className="size-16 rounded-full object-cover"
             />
           ) : (

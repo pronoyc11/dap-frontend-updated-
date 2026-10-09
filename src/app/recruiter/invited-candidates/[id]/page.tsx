@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
+import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "@/components/dashboard";
 
 export default function InvitedCandidateDetails() {
@@ -34,9 +35,10 @@ export default function InvitedCandidateDetails() {
       <Card className="mt-8">
         <div className="flex items-center gap-4">
           {data.avatarUrl ? (
-            <img
+            <AvatarImage
               src={data.avatarUrl}
               alt="Candidate avatar"
+              size={64}
               className="size-16 rounded-full object-cover"
             />
           ) : (

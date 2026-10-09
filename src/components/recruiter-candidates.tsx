@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { queries } from "@/lib/queries";
 import { Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
+import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "@/components/dashboard";
 
 export function RecruiterCandidates() {
@@ -56,7 +57,12 @@ export function RecruiterCandidates() {
               >
                 <span className="grid size-11 place-items-center overflow-hidden rounded-full bg-cyan-400/10 text-cyan-300">
                   {candidate.avatarUrl ? (
-                    <img src={candidate.avatarUrl} alt="" className="size-full object-cover" />
+                    <AvatarImage
+                      src={candidate.avatarUrl}
+                      alt=""
+                      size={44}
+                      className="size-full object-cover"
+                    />
                   ) : (
                     candidate.name.slice(0, 1).toUpperCase()
                   )}

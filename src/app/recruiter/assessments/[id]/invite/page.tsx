@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
+import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "@/components/dashboard";
 
 export default function InviteToAssessment() {
@@ -121,7 +122,12 @@ export default function InviteToAssessment() {
                 />
                 <span className="grid size-10 place-items-center overflow-hidden rounded-full bg-cyan-400/10 text-cyan-300">
                   {candidate.avatarUrl ? (
-                    <img src={candidate.avatarUrl} alt="" className="size-full object-cover" />
+                    <AvatarImage
+                      src={candidate.avatarUrl}
+                      alt=""
+                      size={44}
+                      className="size-full object-cover"
+                    />
                   ) : (
                     candidate.name.slice(0, 1).toUpperCase()
                   )}
