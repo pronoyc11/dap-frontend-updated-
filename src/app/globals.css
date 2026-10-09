@@ -70,6 +70,10 @@ select,
 button:disabled {
   cursor: not-allowed;
 }
+:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 3px;
+}
 ::selection {
   background: #22d3ee;
   color: #07111f;
@@ -88,6 +92,16 @@ button:disabled {
   button,
   a {
     max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 .grid-noise {

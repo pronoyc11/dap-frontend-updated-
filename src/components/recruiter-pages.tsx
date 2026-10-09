@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { queries } from "@/lib/queries";
 import { api } from "@/lib/api";
 import { Button, Card, Skeleton } from "@/components/ui";
+import { AvatarImage } from "@/components/avatar-image";
 import { PageIntro } from "./dashboard";
 
 export function RecruiterProfile() {
@@ -64,9 +65,10 @@ export function RecruiterProfile() {
       <Card className="mt-8 max-w-2xl">
         <div className="flex items-center gap-4">
           {typeof profile.companyLogoUrl === "string" && profile.companyLogoUrl ? (
-            <img
+            <AvatarImage
               src={profile.companyLogoUrl}
               alt="Company logo"
+              size={64}
               className="size-16 rounded-2xl object-cover"
             />
           ) : (

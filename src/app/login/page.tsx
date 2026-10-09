@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { BriefcaseBusiness, KeyRound, Shield, UserRound } from "lucide-react";
 import { toast } from "sonner";
-import { GoogleLogin } from "@/components/google-login";
+import { GoogleLogin } from "@/features/auth";
 import { Button, Card } from "@/components/ui";
 import { api } from "@/lib/api";
 import { markSession } from "@/lib/session";

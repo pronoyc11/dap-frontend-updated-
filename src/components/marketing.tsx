@@ -3,7 +3,7 @@ import { Card } from "./ui";
 import { MarketingNav } from "./marketing-nav";
 export { MarketingNav } from "./marketing-nav";
 
-export async function MarketingShell({ children }: { children: React.ReactNode }) {
+export function MarketingShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid-noise min-h-screen">
       <MarketingNav />

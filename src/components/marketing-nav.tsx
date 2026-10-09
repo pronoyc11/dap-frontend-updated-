@@ -51,6 +51,7 @@ export function MarketingNav() {
     <>
       {open && (
         <button
+          type="button"
           aria-label="Close navigation"
           className="fixed inset-0 z-30 bg-slate-950/60 md:hidden"
           onClick={closeMenu}
@@ -100,6 +101,7 @@ export function MarketingNav() {
             ) : null}
           </div>
           <button
+            type="button"
             aria-label={open ? "Close menu" : "Open menu"}
             className="rounded-xl p-2 text-slate-200 hover:bg-white/10 md:hidden"
             onClick={() => setOpen((value) => !value)}

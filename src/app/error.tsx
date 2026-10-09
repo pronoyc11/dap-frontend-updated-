@@ -14,7 +14,7 @@ export default function Error({
         </p>
         <h1 className="mt-4 text-3xl font-bold text-white">The workspace hit a snag.</h1>
         <p className="mt-3 text-slate-400">
-          Try the request again. If the API is offline, start the backend on port 5000.
+          Try the request again with your internet connection on.
         </p>
         <Button className="mt-6" onClick={reset}>
           Try again

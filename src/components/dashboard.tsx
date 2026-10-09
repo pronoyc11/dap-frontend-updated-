@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { ArrowUpRight, ClipboardList, CreditCard, Users, Zap } from "lucide-react";
 import { queries } from "@/lib/queries";
-import { Badge, Button, Card, EmptyState, Skeleton } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, ErrorState, Skeleton } from "@/components/ui";
 import type { Assessment, Attempt } from "@/lib/types";
 
 export function StatCard({
@@ -107,11 +107,19 @@ export function AdminOverview() {
   );
 }
 export function RecruiterOverview() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["assessments"],
     queryFn: () => queries.assessments("?page=1&limit=5"),
   });
   if (isLoading) return <DashboardSkeleton />;
+  if (error || !data) {
+    return (
+      <ErrorState
+        description="We could not load your assessments."
+        onRetry={() => void refetch()}
+      />
+    );
+  }
   return (
     <>
       <PageIntro
@@ -197,11 +205,16 @@ export function RecruiterOverview() {
   );
 }
 export function CandidateOverview() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["attempts"],
     queryFn: () => queries.attempts("?page=1&limit=5"),
   });
   if (isLoading) return <DashboardSkeleton />;
+  if (error || !data) {
+    return (
+      <ErrorState description="We could not load your activity." onRetry={() => void refetch()} />
+    );
+  }
   const attempts = Array.isArray(data?.items) ? data.items : [];
   return (
     <>

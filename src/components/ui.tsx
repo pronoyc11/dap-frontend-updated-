@@ -10,7 +10,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-50",
         {
           "bg-cyan-400 text-slate-950 hover:bg-cyan-300": variant === "primary",
           "border border-white/10 bg-white/5 text-white hover:bg-white/10": variant === "secondary",
@@ -62,6 +62,27 @@ export function EmptyState({ title, description }: { title: string; description:
     <div className="rounded-2xl border border-dashed border-white/15 px-6 py-14 text-center">
       <p className="font-semibold text-white">{title}</p>
       <p className="mt-2 text-sm text-slate-400">{description}</p>
+    </div>
+  );
+}
+export function ErrorState({
+  title = "Something went wrong",
+  description = "We could not load this workspace. Try again.",
+  onRetry,
+}: {
+  title?: string;
+  description?: string;
+  onRetry?: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-rose-400/20 bg-rose-400/[.06] px-6 py-12 text-center">
+      <p className="font-semibold text-rose-200">{title}</p>
+      <p className="mt-2 text-sm text-slate-400">{description}</p>
+      {onRetry ? (
+        <Button type="button" variant="secondary" className="mt-5" onClick={onRetry}>
+          Try again
+        </Button>
+      ) : null}
     </div>
   );
 }
