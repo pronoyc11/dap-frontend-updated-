@@ -4,15 +4,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { api, endpoints } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
 import { PageIntro } from "@/components/dashboard";
 
 type Invitation = {
   id: string;
-  status: string;
+  status: "PENDING" | "ACCEPTED" | "USED" | "REJECTED";
   expiresAt?: string;
+  rejectionReason?: string | null;
   assessment?: {
     title?: string;
     description?: string;
@@ -42,6 +43,8 @@ export function CandidateInvitations() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") ?? 1);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["invitations", page],
     queryFn: () => queries.invitations(`?page=${page}&limit=10`),
@@ -70,6 +73,25 @@ export function CandidateInvitations() {
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "Unable to start assessment");
       await refetch();
+    } finally {
+      setPendingId(null);
+    }
+  }
+  async function reject(invitation: Invitation) {
+    const reason = rejectionReason.trim();
+    if (!reason) {
+      toast.error("Please provide a rejection reason.");
+      return;
+    }
+    setPendingId(invitation.id);
+    try {
+      await endpoints.rejectInvitation(invitation.id, { reason });
+      toast.success("Invitation rejected. The recruiter has been notified.");
+      setRejectingId(null);
+      setRejectionReason("");
+      await refetch();
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to reject invitation");
     } finally {
       setPendingId(null);
     }
@@ -110,27 +132,85 @@ export function CandidateInvitations() {
                       Expires {invite.expiresAt ? new Date(invite.expiresAt).toLocaleString() : "—"}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge tone={invite.status === "PENDING" ? "warning" : "success"}>
-                      {invite.status}
-                    </Badge>
-                    {invite.status === "PENDING" && (
-                      <Button
-                        type="button"
-                        disabled={pending}
-                        onClick={() => void acceptAndStart(invite)}
+                  <div className="flex flex-col items-stretch gap-3 sm:items-end">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        tone={
+                          invite.status === "PENDING"
+                            ? "warning"
+                            : invite.status === "REJECTED"
+                              ? "danger"
+                              : "success"
+                        }
                       >
-                        {pending ? "Starting…" : "Accept & start"}
-                      </Button>
+                        {invite.status}
+                      </Badge>
+                      {invite.status === "PENDING" && (
+                        <Button
+                          type="button"
+                          disabled={pending}
+                          onClick={() => void acceptAndStart(invite)}
+                        >
+                          {pending ? "Starting…" : "Accept & start"}
+                        </Button>
+                      )}
+                      {invite.status === "ACCEPTED" && (
+                        <Button
+                          type="button"
+                          disabled={pending}
+                          onClick={() => void startAccepted(invite)}
+                        >
+                          {pending ? "Starting…" : "Start attempt"}
+                        </Button>
+                      )}
+                      {invite.status === "PENDING" && rejectingId !== invite.id && (
+                        <Button
+                          type="button"
+                          variant="danger"
+                          disabled={pending}
+                          onClick={() => setRejectingId(invite.id)}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                    </div>
+                    {rejectingId === invite.id && (
+                      <div className="w-full max-w-sm space-y-2">
+                        <textarea
+                          value={rejectionReason}
+                          onChange={(event) => setRejectionReason(event.target.value)}
+                          placeholder="Why are you rejecting this invitation?"
+                          rows={3}
+                          required
+                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white"
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            disabled={pending}
+                            onClick={() => {
+                              setRejectingId(null);
+                              setRejectionReason("");
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            disabled={pending || !rejectionReason.trim()}
+                            onClick={() => void reject(invite)}
+                          >
+                            {pending ? "Rejecting…" : "Confirm rejection"}
+                          </Button>
+                        </div>
+                      </div>
                     )}
-                    {invite.status === "ACCEPTED" && (
-                      <Button
-                        type="button"
-                        disabled={pending}
-                        onClick={() => void startAccepted(invite)}
-                      >
-                        {pending ? "Starting…" : "Start attempt"}
-                      </Button>
+                    {invite.status === "REJECTED" && invite.rejectionReason && (
+                      <p className="max-w-sm text-right text-xs text-slate-500">
+                        Reason: {invite.rejectionReason}
+                      </p>
                     )}
                   </div>
                 </div>

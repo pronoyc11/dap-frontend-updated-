@@ -100,6 +100,8 @@ export const endpoints = {
     api.get(`/assessments/${id}/submissions${params}`),
   invitation: (id: string) => api.get(`/invitations/${id}`),
   acceptInvitation: (token: string) => api.post(`/invitations/${token}/accept`),
+  rejectInvitation: (id: string, body: { reason: string }) =>
+    api.post(`/invitations/id/${id}/reject`, body),
   startInvitation: (token: string) => api.post(`/invitations/${token}/start`),
   deleteInvitation: (id: string) => api.del(`/invitations/${id}`),
   attempts: (params = "") => api.get(`/attempts${params}`),
