@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck, Sparkles, Target } from "lucide-react";
+import {
+  ArrowRight,
+  BrainCircuit,
+  Check,
+  FileCode2,
+  ShieldCheck,
+  Sparkles,
+  Target,
+} from "lucide-react";
 import { Button } from "@/components/ui";
 import { FeatureCard, MarketingShell } from "@/components/marketing";
 export default function Home() {
@@ -43,6 +51,45 @@ export default function Home() {
               system.
             </FeatureCard>
           </div>
+          <section className="relative mt-20 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.12] via-white/[.04] to-transparent p-6 sm:p-8 lg:p-10">
+            <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-cyan-300/10 blur-3xl animate-float" />
+            <div className="relative grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
+              <div className="animate-reveal">
+                <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[.2em] text-cyan-300">
+                  <Sparkles className="size-4" /> AI-assisted workflows
+                </p>
+                <h2 className="mt-4 max-w-xl text-3xl font-black tracking-tight text-white sm:text-4xl">
+                  Move from blank page to better signal, faster.
+                </h2>
+                <p className="mt-4 max-w-xl leading-7 text-slate-400">
+                  Atlas uses responsible AI to help recruiters author stronger problems and review
+                  written answers—while keeping every final decision in human hands.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="animate-reveal rounded-2xl border border-white/10 bg-black/20 p-5 [animation-delay:120ms]">
+                  <span className="grid size-10 place-items-center rounded-xl bg-cyan-300/15 text-cyan-300">
+                    <FileCode2 className="size-5" />
+                  </span>
+                  <h3 className="mt-5 font-bold text-white">AI problem drafting</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-400">
+                    Describe a skill, choose a difficulty, and get a structured draft ready for
+                    recruiter review.
+                  </p>
+                </div>
+                <div className="animate-reveal rounded-2xl border border-white/10 bg-black/20 p-5 [animation-delay:240ms]">
+                  <span className="grid size-10 place-items-center rounded-xl bg-violet-300/15 text-violet-300">
+                    <BrainCircuit className="size-5" />
+                  </span>
+                  <h3 className="mt-5 font-bold text-white">Written-answer guidance</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-400">
+                    Get an evidence-based score and feedback suggestion, then approve or edit it
+                    yourself.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
         </section>
       </main>
     </MarketingShell>

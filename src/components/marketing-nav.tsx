@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui";
@@ -21,6 +21,7 @@ const links = [
 ] as const;
 
 export function MarketingNav() {
+  const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
@@ -73,12 +74,24 @@ export function MarketingNav() {
             atlas<span className="text-cyan-300">/</span>DAP
           </span>
         </Link>
-        <nav className="hidden gap-7 text-sm text-slate-300 md:flex">
-          {links.map(([href, label]) => (
-            <Link key={href} href={href}>
-              {label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-2 text-sm md:flex">
+          {links.map(([href, label]) => {
+            const active = pathname === href || pathname.startsWith(`${href}/`);
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? "page" : undefined}
+                className={`relative rounded-lg px-3 py-2 font-medium transition-colors after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:origin-left after:rounded-full after:bg-cyan-300 after:transition-transform ${
+                  active
+                    ? "text-cyan-300 after:scale-x-100"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white after:scale-x-0"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
@@ -115,16 +128,22 @@ export function MarketingNav() {
         {open && (
           <div className="absolute inset-x-4 top-full rounded-2xl border border-white/10 bg-[#0a1728] p-4 shadow-2xl md:hidden">
             <nav className="grid gap-1 text-sm text-slate-200">
-              {links.map(([href, label]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={closeMenu}
-                  className="rounded-xl px-3 py-3 hover:bg-white/10"
-                >
-                  {label}
-                </Link>
-              ))}
+              {links.map(([href, label]) => {
+                const active = pathname === href || pathname.startsWith(`${href}/`);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={closeMenu}
+                    aria-current={active ? "page" : undefined}
+                    className={`rounded-xl px-3 py-3 transition-colors ${
+                      active ? "bg-cyan-300/10 font-semibold text-cyan-300" : "hover:bg-white/10"
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
             </nav>
             <div className="mt-3 grid gap-2 border-t border-white/10 pt-3">
               {role && !isError ? (
