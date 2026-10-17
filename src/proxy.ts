@@ -13,11 +13,14 @@ export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const hasSession = Boolean(request.cookies.get("accessToken"));
   const isAuthRoute = authRoutes.includes(pathname);
+  const sessionRole = request.cookies.get("sessionRole")?.value;
+  const dashboard =
+    sessionRole === "ADMIN" ? "/admin" : sessionRole === "RECRUITER" ? "/recruiter" : "/dashboard";
   const isProtected =
     matches(pathname, routeGroups.admin) ||
     matches(pathname, routeGroups.recruiter) ||
     matches(pathname, routeGroups.candidate);
-  if (isAuthRoute && hasSession) return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (isAuthRoute && hasSession) return NextResponse.redirect(new URL(dashboard, request.url));
   if (isProtected && !hasSession)
     return NextResponse.redirect(
       new URL(`/login?next=${encodeURIComponent(pathname)}`, request.url),

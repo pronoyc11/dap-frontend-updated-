@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button, Card } from "@/components/ui";
 import { api } from "@/lib/api";
+import { queries } from "@/lib/queries";
 
 const schema = z.object({
   name: z.string().trim().min(2),
@@ -18,6 +20,7 @@ const recruiterMessage =
 
 export default function Register() {
   const router = useRouter();
+  const session = useQuery({ queryKey: ["auth", "me"], queryFn: queries.me, retry: false });
   const [value, setValue] = useState({
     name: "",
     email: "",
@@ -27,6 +30,25 @@ export default function Register() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const recruiter = value.role === "RECRUITER";
+
+  useEffect(() => {
+    if (!session.data) return;
+    router.replace(
+      session.data.role === "ADMIN"
+        ? "/admin"
+        : session.data.role === "RECRUITER"
+          ? "/recruiter"
+          : "/dashboard",
+    );
+  }, [router, session.data]);
+
+  if (session.isLoading || session.data) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#07111f] px-4 text-slate-300">
+        <p role="status">Checking your session…</p>
+      </main>
+    );
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
