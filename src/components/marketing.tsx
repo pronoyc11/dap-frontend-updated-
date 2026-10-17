@@ -7,7 +7,7 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid-noise min-h-screen">
       <MarketingNav />
-      {children}
+      <div className="pt-[4.75rem] sm:pt-[5.5rem]">{children}</div>
       <footer className="mx-auto mt-24 flex max-w-7xl flex-col gap-4 border-t border-white/10 px-6 py-8 text-sm text-slate-500 sm:flex-row sm:justify-between">
         <span>© 2026 Atlas DAP</span>
         <span>Assess fairly. Hire confidently.</span>

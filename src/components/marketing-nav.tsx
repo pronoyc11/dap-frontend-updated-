@@ -61,97 +61,46 @@ export function MarketingNav() {
           onClick={closeMenu}
         />
       )}
-      <header className="marketing-nav sticky top-0 z-50 mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#07111f]/85 px-4 py-4 shadow-lg shadow-slate-950/5 backdrop-blur-xl sm:px-6 sm:py-5">
-        <Link
-          href="/"
-          onClick={closeMenu}
-          className="flex items-center gap-3 font-black tracking-tight"
-        >
-          <span className="grid size-9 place-items-center rounded-xl bg-cyan-400 text-slate-950">
-            A
-          </span>
-          <span>
-            atlas<span className="text-cyan-300">/</span>DAP
-          </span>
-        </Link>
-        <nav className="hidden items-center gap-2 text-sm md:flex">
-          {links.map(([href, label]) => {
-            const active = pathname === href || pathname.startsWith(`${href}/`);
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={`relative rounded-lg px-3 py-2 font-medium transition-colors after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:origin-left after:rounded-full after:bg-cyan-300 after:transition-transform ${
-                  active
-                    ? "text-cyan-300 after:scale-x-100"
-                    : "text-slate-300 hover:bg-white/5 hover:text-white after:scale-x-0"
-                }`}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <div className="hidden items-center gap-2 sm:flex">
-            {role && !isError ? (
-              <>
-                <Link href={dashboard}>
-                  <Button variant="secondary">Dashboard</Button>
-                </Link>
-                <Button variant="ghost" onClick={() => void logout()}>
-                  Sign out
-                </Button>
-              </>
-            ) : !isLoading ? (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost">Sign in</Button>
-                </Link>
-                <Link href="/register">
-                  <Button>Get started</Button>
-                </Link>
-              </>
-            ) : null}
-          </div>
-          <button
-            type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            className="rounded-xl p-2 text-slate-200 hover:bg-white/10 md:hidden"
-            onClick={() => setOpen((value) => !value)}
+      <header className="marketing-nav fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-transparent shadow-[0_10px_30px_rgba(2,8,23,0.22)] backdrop-blur-xl">
+        <div className="relative mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-5">
+          <Link
+            href="/"
+            onClick={closeMenu}
+            className="flex items-center gap-3 font-black tracking-tight"
           >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
-        </div>
-        {open && (
-          <div className="absolute inset-x-4 top-full rounded-2xl border border-white/10 bg-[#0a1728] p-4 shadow-2xl md:hidden">
-            <nav className="grid gap-1 text-sm text-slate-200">
-              {links.map(([href, label]) => {
-                const active = pathname === href || pathname.startsWith(`${href}/`);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={closeMenu}
-                    aria-current={active ? "page" : undefined}
-                    className={`rounded-xl px-3 py-3 transition-colors ${
-                      active ? "bg-cyan-300/10 font-semibold text-cyan-300" : "hover:bg-white/10"
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="mt-3 grid gap-2 border-t border-white/10 pt-3">
+            <span className="grid size-9 place-items-center rounded-xl bg-cyan-400 text-slate-950">
+              A
+            </span>
+            <span>
+              atlas<span className="text-cyan-300">/</span>DAP
+            </span>
+          </Link>
+          <nav className="hidden items-center gap-2 text-sm md:flex">
+            {links.map(([href, label]) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`relative rounded-lg px-3 py-2 font-medium transition-colors after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:origin-left after:rounded-full after:bg-cyan-300 after:transition-transform ${
+                    active
+                      ? "text-cyan-300 after:scale-x-100"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white after:scale-x-0"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <div className="hidden items-center gap-2 sm:flex">
               {role && !isError ? (
                 <>
-                  <Link href={dashboard} onClick={closeMenu}>
-                    <Button className="w-full" variant="secondary">
-                      Dashboard
-                    </Button>
+                  <Link href={dashboard}>
+                    <Button variant="secondary">Dashboard</Button>
                   </Link>
                   <Button variant="ghost" onClick={() => void logout()}>
                     Sign out
@@ -159,19 +108,72 @@ export function MarketingNav() {
                 </>
               ) : !isLoading ? (
                 <>
-                  <Link href="/login" onClick={closeMenu}>
-                    <Button className="w-full" variant="ghost">
-                      Sign in
-                    </Button>
+                  <Link href="/login">
+                    <Button variant="ghost">Sign in</Button>
                   </Link>
-                  <Link href="/register" onClick={closeMenu}>
-                    <Button className="w-full">Get started</Button>
+                  <Link href="/register">
+                    <Button>Get started</Button>
                   </Link>
                 </>
               ) : null}
             </div>
+            <button
+              type="button"
+              aria-label={open ? "Close menu" : "Open menu"}
+              className="rounded-xl p-2 text-slate-200 hover:bg-white/10 md:hidden"
+              onClick={() => setOpen((value) => !value)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
           </div>
-        )}
+          {open && (
+            <div className="absolute inset-x-4 top-full rounded-2xl border border-white/10 bg-[#0a1728] p-4 shadow-2xl md:hidden">
+              <nav className="grid gap-1 text-sm text-slate-200">
+                {links.map(([href, label]) => {
+                  const active = pathname === href || pathname.startsWith(`${href}/`);
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={closeMenu}
+                      aria-current={active ? "page" : undefined}
+                      className={`rounded-xl px-3 py-3 transition-colors ${
+                        active ? "bg-cyan-300/10 font-semibold text-cyan-300" : "hover:bg-white/10"
+                      }`}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
+              </nav>
+              <div className="mt-3 grid gap-2 border-t border-white/10 pt-3">
+                {role && !isError ? (
+                  <>
+                    <Link href={dashboard} onClick={closeMenu}>
+                      <Button className="w-full" variant="secondary">
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button variant="ghost" onClick={() => void logout()}>
+                      Sign out
+                    </Button>
+                  </>
+                ) : !isLoading ? (
+                  <>
+                    <Link href="/login" onClick={closeMenu}>
+                      <Button className="w-full" variant="ghost">
+                        Sign in
+                      </Button>
+                    </Link>
+                    <Link href="/register" onClick={closeMenu}>
+                      <Button className="w-full">Get started</Button>
+                    </Link>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          )}
+        </div>
       </header>
     </>
   );

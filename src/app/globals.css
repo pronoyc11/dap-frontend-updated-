@@ -31,9 +31,9 @@ body {
   background: #ffffff !important;
 }
 :root.light .marketing-nav {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: transparent !important;
   border-color: rgba(15, 23, 42, 0.12) !important;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
 }
 :root.light .text-white {
   color: #0f172a !important;
