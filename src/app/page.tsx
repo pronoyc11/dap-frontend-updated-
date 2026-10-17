@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <MarketingShell>
       <main>
-        <section className="mx-auto max-w-7xl px-6 pb-20 pt-16 lg:pb-32 lg:pt-28">
+        <section className="mx-auto max-w-7xl px-6 pb-20 pt-10 lg:pb-32 lg:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(26rem,.85fr)] lg:gap-16">
             <div className="max-w-4xl">
               <p className="mb-5 flex items-center gap-2 text-sm font-bold uppercase tracking-[.24em] text-cyan-300">
