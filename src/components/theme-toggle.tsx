@@ -13,7 +13,7 @@ export function ThemeToggle() {
   );
   if (!mounted)
     return (
-      <Button aria-label="Change theme" variant="ghost" className="size-10 p-0">
+      <Button aria-label="Change theme" variant="ghost" className="theme-toggle size-10 p-0">
         <Monitor className="size-4" />
       </Button>
     );
@@ -24,7 +24,7 @@ export function ThemeToggle() {
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       variant="ghost"
-      className="size-10 p-0"
+      className="theme-toggle size-10 p-0"
       onClick={() => setTheme(next)}
     >
       <Icon className="size-4" />

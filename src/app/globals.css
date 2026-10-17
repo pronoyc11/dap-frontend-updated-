@@ -70,6 +70,27 @@ body {
 :root.light [class*="bg-white/"] {
   background-color: rgba(15, 23, 42, 0.045) !important;
 }
+.theme-toggle {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+.theme-toggle:hover {
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(34, 211, 238, 0.12);
+  color: #67e8f9;
+}
+:root.light .theme-toggle {
+  border-color: rgba(15, 23, 42, 0.18);
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+:root.light .theme-toggle:hover {
+  border-color: rgba(8, 145, 178, 0.55);
+  background: #ecfeff;
+  color: #0e7490;
+}
 :root.light input,
 :root.light textarea,
 :root.light select {
@@ -128,6 +149,19 @@ button:disabled {
     linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 38px 38px;
+}
+:root.light .grid-noise {
+  background-color: #f4f7fb;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 15% 0%, rgba(34, 211, 238, 0.1), transparent 30rem),
+    radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.07), transparent 26rem);
+  background-size:
+    38px 38px,
+    38px 38px,
+    auto,
+    auto;
 }
 @keyframes atlas-float {
   0%,
