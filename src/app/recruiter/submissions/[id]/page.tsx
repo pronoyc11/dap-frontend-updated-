@@ -4,7 +4,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { api, endpoints } from "@/lib/api";
 import { queries } from "@/lib/queries";
 import { Badge, Button, Card, EmptyState, PaginationControls, Skeleton } from "@/components/ui";
 import { PageIntro } from "@/components/dashboard";
@@ -104,10 +104,33 @@ function SubmissionRow({
   const [score, setScore] = useState("");
   const [feedback, setFeedback] = useState("");
   const [pending, setPending] = useState(false);
+  const [aiPending, setAiPending] = useState(false);
+  const [suggestion, setSuggestion] = useState<{
+    suggestedScore: number;
+    maxScore: number;
+    feedback: string;
+    strengths: string[];
+    concerns: string[];
+    confidence: "LOW" | "MEDIUM" | "HIGH";
+  } | null>(null);
   const item = (submission.assessmentItem ?? {}) as Record<string, unknown>;
   const attempt = (submission.attempt ?? {}) as Record<string, unknown>;
   const candidate = (attempt.candidate ?? {}) as Record<string, unknown>;
   const isWritten = item.type === "WRITTEN";
+  async function suggest() {
+    setAiPending(true);
+    try {
+      const result = await endpoints.suggestWrittenEvaluation<NonNullable<typeof suggestion>>(
+        String(submission.id),
+      );
+      setSuggestion(result);
+      toast.success("AI suggestion ready. Review it before applying.");
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to generate AI suggestion");
+    } finally {
+      setAiPending(false);
+    }
+  }
   async function evaluate() {
     const numericScore = Number(score);
     const points = Number(item.points ?? 0);
@@ -163,31 +186,76 @@ function SubmissionRow({
         </p>
       </div>
       {isWritten && submission.status === "PENDING" && (
-        <div className="mt-5 grid gap-3 sm:grid-cols-[120px_1fr_auto]">
-          <input
-            type="number"
-            min={0}
-            max={Number(item.points ?? 0)}
-            required
-            value={score}
-            onChange={(event) => setScore(event.target.value)}
-            placeholder="Score"
-            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white"
-          />
-          <input
-            value={feedback}
-            onChange={(event) => setFeedback(event.target.value)}
-            required
-            placeholder="Feedback"
-            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white"
-          />
-          <Button
-            type="button"
-            disabled={pending || !score.trim() || !feedback.trim()}
-            onClick={() => void evaluate()}
-          >
-            Evaluate
-          </Button>
+        <div className="mt-5 space-y-3">
+          <div className="flex flex-wrap gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={aiPending || pending}
+              onClick={() => void suggest()}
+            >
+              {aiPending ? "Analyzing…" : "Suggest with AI"}
+            </Button>
+            <span className="self-center text-xs text-slate-500">
+              AI suggestions require recruiter review.
+            </span>
+          </div>
+          {suggestion && (
+            <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[.06] p-4 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-bold text-cyan-200">
+                  Suggested {suggestion.suggestedScore}/{suggestion.maxScore}
+                </p>
+                <Badge tone="neutral">{suggestion.confidence} confidence</Badge>
+              </div>
+              <p className="mt-2 text-slate-300">{suggestion.feedback}</p>
+              {suggestion.strengths.length > 0 && (
+                <p className="mt-2 text-emerald-200">
+                  Strengths: {suggestion.strengths.join(" · ")}
+                </p>
+              )}
+              {suggestion.concerns.length > 0 && (
+                <p className="mt-2 text-amber-200">Concerns: {suggestion.concerns.join(" · ")}</p>
+              )}
+              <Button
+                type="button"
+                className="mt-3"
+                variant="secondary"
+                onClick={() => {
+                  setScore(String(suggestion.suggestedScore));
+                  setFeedback(suggestion.feedback);
+                }}
+              >
+                Apply suggestion
+              </Button>
+            </div>
+          )}
+          <div className="grid gap-3 sm:grid-cols-[120px_1fr_auto]">
+            <input
+              type="number"
+              min={0}
+              max={Number(item.points ?? 0)}
+              required
+              value={score}
+              onChange={(event) => setScore(event.target.value)}
+              placeholder="Score"
+              className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white"
+            />
+            <input
+              value={feedback}
+              onChange={(event) => setFeedback(event.target.value)}
+              required
+              placeholder="Feedback"
+              className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white"
+            />
+            <Button
+              type="button"
+              disabled={pending || !score.trim() || !feedback.trim()}
+              onClick={() => void evaluate()}
+            >
+              Evaluate
+            </Button>
+          </div>
         </div>
       )}
     </article>

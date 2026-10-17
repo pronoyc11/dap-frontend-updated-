@@ -108,6 +108,9 @@ export const endpoints = {
   attempt: (id: string) => api.get(`/attempts/${id}`),
   submitAttempt: (id: string, body: unknown) => api.post(`/attempts/${id}/submit`, body),
   evaluateSubmission: (id: string, body: unknown) => api.patch(`/submissions/${id}/evaluate`, body),
+  generateProblemDraft: <T>(body: unknown) => api.post<T>("/ai/problem-drafts", body),
+  suggestWrittenEvaluation: <T>(id: string) =>
+    api.post<T>(`/ai/submissions/${id}/evaluation-suggestion`),
   adminDashboard: () => api.get("/admin/dashboard"),
   adminUsers: (params = "") => api.get(`/admin/users${params}`),
   adminUser: (id: string) => api.get(`/admin/users/${id}`),

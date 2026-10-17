@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { api, endpoints } from "@/lib/api";
 import { Button, Card } from "@/components/ui";
 import { PageIntro } from "./dashboard";
 
@@ -55,6 +56,43 @@ export function ProblemForm() {
   const [points, setPoints] = useState("1");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [aiPending, setAiPending] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [difficulty, setDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
+  async function generateDraft() {
+    if (aiTopic.trim().length < 2) {
+      toast.error("Describe the skill or topic for the AI draft.");
+      return;
+    }
+    setAiPending(true);
+    try {
+      const draft = await endpoints.generateProblemDraft<{
+        title: string;
+        question: string;
+        type: "MCQ" | "WRITTEN";
+        options: string[] | null;
+        correctAnswer: string | null;
+        expectedAnswer: string | null;
+        points: number;
+      }>({
+        topic: aiTopic.trim(),
+        type,
+        difficulty,
+        points: Number(points),
+      });
+      setTitle(draft.title);
+      setQuestion(draft.question);
+      setOptions(draft.options?.join("\n") ?? "");
+      setCorrectAnswer(draft.correctAnswer ?? "");
+      setExpectedAnswer(draft.expectedAnswer ?? "");
+      setPoints(String(draft.points));
+      toast.success("AI draft added to the form. Review it before saving.");
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Unable to generate an AI draft");
+    } finally {
+      setAiPending(false);
+    }
+  }
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setError("");
@@ -98,6 +136,42 @@ export function ProblemForm() {
       />
       <Card className="mt-8">
         <form className="space-y-5" onSubmit={submit}>
+          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[.06] p-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-cyan-200">
+              <Sparkles className="size-4" />
+              AI authoring assistant
+            </div>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              Generate a starting draft from a skill or topic. Review every field before saving.
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_140px_auto]">
+              <input
+                value={aiTopic}
+                onChange={(event) => setAiTopic(event.target.value)}
+                placeholder="e.g. React state management"
+                className={input}
+                aria-label="AI problem topic"
+              />
+              <select
+                value={difficulty}
+                onChange={(event) => setDifficulty(event.target.value as typeof difficulty)}
+                className={input}
+                aria-label="AI problem difficulty"
+              >
+                <option value="EASY">Easy</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HARD">Hard</option>
+              </select>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={aiPending || pending}
+                onClick={() => void generateDraft()}
+              >
+                {aiPending ? "Generating…" : "Generate draft"}
+              </Button>
+            </div>
+          </div>
           <Field label="Title" value={title} onChange={setTitle} />
           <Field label="Question" value={question} onChange={setQuestion} area />
           <label className="block text-sm font-semibold text-slate-200">
