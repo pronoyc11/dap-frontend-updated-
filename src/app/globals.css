@@ -30,6 +30,11 @@ body {
 :root.light .bg-\[\#0a1728\] {
   background: #ffffff !important;
 }
+:root.light .marketing-nav {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
 :root.light .text-white {
   color: #0f172a !important;
 }

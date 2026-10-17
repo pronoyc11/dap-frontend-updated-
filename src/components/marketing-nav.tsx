@@ -61,7 +61,7 @@ export function MarketingNav() {
           onClick={closeMenu}
         />
       )}
-      <header className="relative z-40 mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 sm:py-6">
+      <header className="marketing-nav sticky top-0 z-50 mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-[#07111f]/85 px-4 py-4 shadow-lg shadow-slate-950/5 backdrop-blur-xl sm:px-6 sm:py-5">
         <Link
           href="/"
           onClick={closeMenu}
