@@ -80,15 +80,17 @@ body {
   background: rgba(34, 211, 238, 0.12);
   color: #67e8f9;
 }
-:root.light .theme-toggle {
+:root.light .theme-toggle,
+[data-theme="light"] .theme-toggle {
   border-color: rgba(15, 23, 42, 0.18);
-  background: #ffffff;
+  background: #ffffff !important;
   color: #334155;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
-:root.light .theme-toggle:hover {
+:root.light .theme-toggle:hover,
+[data-theme="light"] .theme-toggle:hover {
   border-color: rgba(8, 145, 178, 0.55);
-  background: #ecfeff;
+  background: #ecfeff !important;
   color: #0e7490;
 }
 :root.light input,

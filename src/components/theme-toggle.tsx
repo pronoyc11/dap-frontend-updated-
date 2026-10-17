@@ -5,7 +5,7 @@ import { useSyncExternalStore } from "react";
 import { Button } from "./ui";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
@@ -19,12 +19,22 @@ export function ThemeToggle() {
     );
   const next = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
   const Icon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
+  const light = resolvedTheme === "light";
   return (
     <Button
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       variant="ghost"
       className="theme-toggle size-10 p-0"
+      style={
+        light
+          ? {
+              backgroundColor: "#ffffff",
+              borderColor: "rgba(15, 23, 42, 0.18)",
+              color: "#334155",
+            }
+          : undefined
+      }
       onClick={() => setTheme(next)}
     >
       <Icon className="size-4" />
