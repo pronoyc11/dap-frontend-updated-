@@ -36,8 +36,8 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
             <Link className="transition hover:text-cyan-300" href="/contact">
               Contact the team
             </Link>
-            <a className="transition hover:text-cyan-300" href="mailto:hello@atlas-dap.local">
-              hello@atlas-dap.local
+            <a className="transition hover:text-cyan-300" href="mailto:pronoyc11@gmail.com">
+              pronoyc11@gmail.com
             </a>
             <Link className="transition hover:text-cyan-300" href="/register">
               Create a workspace
@@ -45,25 +45,16 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div>
-          <p className="font-semibold text-slate-200">Connect</p>
-          <div className="mt-3 flex gap-4">
-            <a
-              className="transition hover:text-cyan-300"
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub
-            </a>
-            <a
-              className="transition hover:text-cyan-300"
-              href="https://www.linkedin.com"
-              target="_blank"
-              rel="noreferrer"
-            >
-              LinkedIn
-            </a>
-          </div>
+          <p className="font-semibold text-slate-200">Get in touch</p>
+          <p className="mt-3 leading-6">
+            Questions about setup, assessment authoring, or deployment?
+          </p>
+          <a
+            className="mt-2 inline-block transition hover:text-cyan-300"
+            href="mailto:pronoyc11@gmail.com"
+          >
+            Email the team
+          </a>
           <p className="mt-6 text-xs">© 2026 Atlas DAP</p>
         </div>
       </footer>

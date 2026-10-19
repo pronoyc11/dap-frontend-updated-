@@ -16,8 +16,8 @@ export default function Contact() {
             <p className="mt-2 text-slate-400">
               Questions about setup, API integration, or deployment?
             </p>
-            <a className="mt-5 inline-block text-cyan-300" href="mailto:hello@atlas-dap.local">
-              hello@atlas-dap.local
+            <a className="mt-5 inline-block text-cyan-300" href="mailto:pronoyc11@gmail.com">
+              pronoyc11@gmail.com
             </a>
           </Card>
           <Card>
