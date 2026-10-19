@@ -56,8 +56,8 @@ export default function Home() {
               system.
             </FeatureCard>
           </div>
-          <section className="relative mt-20 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.12] via-white/[.04] to-transparent p-6 sm:p-8 lg:p-10">
-            <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-cyan-300/10 blur-3xl animate-float" />
+          <section className="relative mt-20 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.07] via-white/[.025] to-transparent p-6 sm:p-8 lg:p-10">
+            <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-cyan-300/[.05] blur-3xl animate-float" />
             <div className="relative grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
               <div className="animate-reveal">
                 <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[.2em] text-cyan-300">

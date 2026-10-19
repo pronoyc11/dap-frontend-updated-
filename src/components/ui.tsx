@@ -13,8 +13,9 @@ export function Button({
         "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-50",
         {
           "bg-cyan-400 text-slate-950 hover:bg-cyan-300": variant === "primary",
-          "border border-white/10 bg-white/5 text-white hover:bg-white/10": variant === "secondary",
-          "text-slate-300 hover:bg-white/5": variant === "ghost",
+          "border border-white/10 bg-white/[.035] text-white hover:bg-white/[.07]":
+            variant === "secondary",
+          "text-slate-300 hover:bg-white/[.04]": variant === "ghost",
           "bg-rose-500/15 text-rose-300 hover:bg-rose-500/25": variant === "danger",
         },
         className,
@@ -27,7 +28,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-white/[0.045] p-5 shadow-xl shadow-slate-950/20",
+        "rounded-2xl border border-white/[.08] bg-white/[.03] p-5 shadow-lg shadow-slate-950/20",
         className,
       )}
       {...props}
@@ -44,7 +45,7 @@ export function Badge({
   return (
     <span
       className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold", {
-        "bg-white/10 text-slate-300": tone === "neutral",
+        "bg-white/[.07] text-slate-300": tone === "neutral",
         "bg-emerald-400/15 text-emerald-300": tone === "success",
         "bg-amber-400/15 text-amber-300": tone === "warning",
         "bg-rose-400/15 text-rose-300": tone === "danger",
@@ -55,7 +56,7 @@ export function Badge({
   );
 }
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-xl bg-white/10", className)} />;
+  return <div className={cn("animate-pulse rounded-xl bg-white/[.07]", className)} />;
 }
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (

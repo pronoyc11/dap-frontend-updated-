@@ -126,7 +126,7 @@ export function HomeSections() {
       </section>
 
       <section
-        className="mt-20 rounded-[2rem] border border-violet-300/20 bg-violet-300/[.06] p-6 sm:p-8"
+        className="mt-20 rounded-[2rem] border border-violet-300/20 bg-violet-300/[.04] p-6 sm:p-8"
         aria-labelledby="candidate-heading"
       >
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -231,7 +231,7 @@ export function HomeSections() {
       </section>
 
       <section
-        className="mt-20 rounded-[2rem] border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.12] to-transparent p-8 text-center sm:p-12"
+        className="mt-20 rounded-[2rem] border border-cyan-300/20 bg-gradient-to-br from-cyan-300/[.07] to-transparent p-8 text-center sm:p-12"
         aria-labelledby="cta-heading"
       >
         <h2 id="cta-heading" className="text-3xl font-black tracking-tight text-white sm:text-4xl">

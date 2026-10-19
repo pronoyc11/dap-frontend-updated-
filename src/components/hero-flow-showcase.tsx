@@ -61,13 +61,13 @@ const accentClasses = {
   cyan: {
     icon: "bg-cyan-300/15 text-cyan-300",
     line: "bg-cyan-300",
-    soft: "bg-cyan-300/[.08]",
+    soft: "bg-cyan-300/[.05]",
     text: "text-cyan-300",
   },
   violet: {
     icon: "bg-violet-300/15 text-violet-300",
     line: "bg-violet-300",
-    soft: "bg-violet-300/[.08]",
+    soft: "bg-violet-300/[.05]",
     text: "text-violet-300",
   },
   amber: {
@@ -97,7 +97,7 @@ export function HeroFlowShowcase() {
       aria-label="How Atlas works"
       className={`relative min-h-[25rem] overflow-hidden rounded-[2rem] border border-white/10 ${colors.soft} p-5 shadow-2xl shadow-slate-950/20 transition-colors duration-500 sm:p-7`}
     >
-      <div className="pointer-events-none absolute -right-20 -top-20 size-52 rounded-full bg-white/[.06] blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 -top-20 size-52 rounded-full bg-white/[.035] blur-3xl" />
       <div className="relative flex h-full flex-col">
         <div className="flex items-start justify-between gap-4">
           <div className={`grid size-12 place-items-center rounded-2xl ${colors.icon}`}>
