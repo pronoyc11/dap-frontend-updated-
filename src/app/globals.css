@@ -15,6 +15,29 @@ body {
   color: #dce6f2;
   font-family: Arial, Helvetica, sans-serif;
 }
+:root:not(.light) [class*="bg-white/"] {
+  background-color: rgba(148, 163, 184, 0.085) !important;
+}
+:root:not(.light) [class*="border-white"] {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+}
+:root:not(.light) .text-slate-400 {
+  color: #b1bfd0 !important;
+}
+:root:not(.light) .text-slate-500 {
+  color: #8fa1b6 !important;
+}
+:root:not(.light) input,
+:root:not(.light) textarea,
+:root:not(.light) select {
+  background-color: #142238 !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+  color: #f8fafc !important;
+}
+:root:not(.light) input::placeholder,
+:root:not(.light) textarea::placeholder {
+  color: #8fa1b6;
+}
 html,
 body {
   min-width: 320px;
@@ -84,6 +107,11 @@ body {
   border-color: rgba(34, 211, 238, 0.55);
   background: rgba(34, 211, 238, 0.12);
   color: #67e8f9;
+}
+:root:not(.light) .theme-toggle {
+  border-color: rgba(148, 163, 184, 0.35);
+  background: rgba(20, 34, 56, 0.88);
+  color: #e2e8f0;
 }
 :root.light .theme-toggle,
 [data-theme="light"] .theme-toggle {
