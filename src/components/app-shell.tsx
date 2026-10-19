@@ -6,6 +6,7 @@ import {
   BarChart3,
   BookOpen,
   ClipboardList,
+  ChevronDown,
   FileText,
   LayoutDashboard,
   LogOut,
@@ -64,6 +65,7 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
   const { user, setUser } = useAuthStore();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   useEffect(() => {
     let cancelled = false;
 
@@ -167,11 +169,11 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
         </div>
       </aside>
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-20 flex min-w-0 h-16 items-center justify-between border-b border-white/10 bg-[#07111f]/80 px-4 backdrop-blur sm:px-5 lg:px-10">
+        <header className="relative sticky top-0 z-20 flex min-w-0 h-16 items-center justify-between border-b border-white/10 bg-[#07111f]/80 px-4 backdrop-blur sm:px-5 lg:px-10">
           <button type="button" className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu />
           </button>
-          <div className="ml-auto flex items-center gap-3 text-sm text-slate-400">
+          <div className="relative ml-auto flex items-center gap-3 text-sm text-slate-400">
             <ThemeToggle />
             <span className="hidden sm:inline">
               {role === "ADMIN"
@@ -181,6 +183,56 @@ export function AppShell({ children, role }: { children: React.ReactNode; role: 
                   : "Candidate workspace"}
             </span>
             <span className="size-2 rounded-full bg-emerald-400" />
+            <button
+              type="button"
+              aria-expanded={profileOpen}
+              aria-haspopup="menu"
+              aria-label="Open profile menu"
+              className="flex min-h-11 items-center gap-2 rounded-xl border border-white/10 px-2.5 py-1.5 text-left text-slate-200 transition hover:bg-white/5"
+              onClick={() => setProfileOpen((value) => !value)}
+            >
+              <span className="grid size-8 place-items-center rounded-full bg-cyan-400/15 text-xs font-bold text-cyan-300">
+                {initials(user?.name)}
+              </span>
+              <ChevronDown
+                className={`size-4 transition-transform ${profileOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {profileOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-3 w-56 rounded-2xl border border-white/10 bg-[#0a1728] p-2 shadow-2xl"
+              >
+                <div className="border-b border-white/10 px-3 py-2">
+                  <p className="truncate text-sm font-semibold text-white">
+                    {user?.name ?? "Account"}
+                  </p>
+                  <p className="text-xs text-slate-500">{user?.email ?? role}</p>
+                </div>
+                <Link
+                  role="menuitem"
+                  href={
+                    role === "ADMIN"
+                      ? "/admin/profile"
+                      : role === "RECRUITER"
+                        ? "/recruiter/profile"
+                        : "/dashboard/profile"
+                  }
+                  className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
+                  onClick={() => setProfileOpen(false)}
+                >
+                  Profile & settings
+                </Link>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="block w-full rounded-xl px-3 py-2.5 text-left text-sm text-slate-300 transition hover:bg-white/5 hover:text-white"
+                  onClick={() => void logout()}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         </header>
         <main className="mx-auto min-w-0 max-w-7xl p-4 sm:p-5 lg:p-10">{children}</main>

@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui";
 import { FeatureCard, MarketingShell } from "@/components/marketing";
 import { HeroFlowShowcase } from "@/components/hero-flow-showcase";
+import { HomeSections } from "@/components/home-sections";
 export default function Home() {
   return (
     <MarketingShell>
@@ -94,6 +95,7 @@ export default function Home() {
               </div>
             </div>
           </section>
+          <HomeSections />
         </section>
       </main>
     </MarketingShell>
